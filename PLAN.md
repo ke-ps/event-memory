@@ -14,11 +14,11 @@ El primer producto desarrollado será un MVP orientado a bodas.
 
 **Objetivo:** preparar el repositorio, la documentación y las bases del proyecto.
 
-* [ ] Configurar estructura del monorepo.
-* [ ] Configurar Git y GitHub.
-* [ ] Definir flujo de ramas.
-* [ ] Crear documentación inicial.
-* [ ] Definir convenciones de desarrollo.
+* [x] Configurar estructura del monorepo.
+* [x] Configurar Git y GitHub.
+* [x] Definir flujo de ramas.
+* [x] Crear documentación inicial.
+* [x] Definir convenciones de desarrollo.
 
 ---
 
@@ -26,14 +26,14 @@ El primer producto desarrollado será un MVP orientado a bodas.
 
 **Objetivo:** crear y conectar las aplicaciones frontend y backend.
 
-* [ ] Inicializar aplicación Angular.
-* [ ] Inicializar aplicación FastAPI.
-* [ ] Configurar PostgreSQL.
-* [ ] Configurar variables de entorno.
-* [ ] Definir estructura inicial del backend.
-* [ ] Definir estructura inicial del frontend.
-* [ ] Crear health check del backend.
-* [ ] Documentar cómo ejecutar el proyecto localmente.
+* [x] Inicializar aplicación Angular.
+* [x] Inicializar aplicación FastAPI.
+* [x] Configurar PostgreSQL para desarrollo local.
+* [x] Configurar variables de entorno.
+* [x] Definir estructura inicial del backend.
+* [x] Definir estructura inicial del frontend.
+* [x] Crear health check del backend.
+* [x] Documentar cómo ejecutar el proyecto localmente.
 
 ---
 

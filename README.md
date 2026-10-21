@@ -86,9 +86,9 @@ El frontend seguirá una separación entre componentes, servicios y modelos, uti
 
 ## Estado del proyecto
 
-🚧 En desarrollo.
+🚧 En desarrollo. La base técnica inicial está preparada: frontend Angular, API FastAPI con health check y PostgreSQL para desarrollo local.
 
-Actualmente se encuentra en la fase inicial de configuración del proyecto.
+Consulta [`docs/local-development.md`](./docs/local-development.md) para instalar dependencias y ejecutar las aplicaciones.
 
 ## Roadmap
 
