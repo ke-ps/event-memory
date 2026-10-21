@@ -225,7 +225,7 @@ AI must not:
 
 ## 12. Git Workflow
 
-The project follows a Git Flow-inspired workflow.
+The project follows a lightweight Git Flow-inspired workflow. GitHub Issues track work, Pull Requests review changes, and only release-ready code is promoted to `main`.
 
 ### Main branches
 
@@ -240,10 +240,20 @@ develop
 
 ### Feature branches
 
-Features are developed in dedicated branches:
+Before starting a change:
+
+1. Create or select a GitHub Issue describing the goal and acceptance criteria.
+2. Update the local `develop` branch from `origin/develop`.
+3. Create a short-lived branch from `develop` for that issue.
+
+Use these branch prefixes:
 
 ```text
 feature/<short-description>
+fix/<short-description>
+docs/<short-description>
+refactor/<short-description>
+chore/<short-description>
 ```
 
 Examples:
@@ -255,40 +265,67 @@ feature/event-management
 feature/photo-gallery
 ```
 
-Other branch types may be used when appropriate:
+Additional examples across branch types:
 
 ```text
-fix/<short-description>
-docs/<short-description>
-refactor/<short-description>
+feature/guest-rsvp
+fix/event-date-validation
+docs/github-workflow
+refactor/event-repository
+chore/dependency-update
 ```
 
-Changes should not be developed directly on `main` or `develop`.
+Do not develop directly on `main` or `develop`. Keep branches focused on one issue and delete them after they are merged.
 
-### Pull Requests
+Example commands after selecting an Issue:
 
-Completed branches are merged through Pull Requests.
-
-Even when working alone, Pull Requests are used to maintain a professional workflow and provide a reviewable development history.
+```bash
+git switch develop
+git pull origin develop
+git switch -c feature/short-description
+```
 
 ### Commits
 
-Commits follow Conventional Commits.
-
-Examples:
+Commits follow Conventional Commits and describe one logical change. Use the issue number in the commit body when useful.
 
 ```text
-feat(auth): implementar autenticación
-fix(events): corregir validación de fecha
-docs(project): actualizar documentación
-refactor(events): separar lógica de negocio
-chore(project): configurar entorno
+feat(auth): add couple sign-in
+fix(events): validate event date
+docs(project): document GitHub workflow
+refactor(events): separate repository queries
+chore(project): update local setup
 ```
+
+### Pull Requests
+
+Open a Pull Request from the task branch into `develop`. Each PR should:
+
+* Link the GitHub Issue and close it on merge (for example, `Closes #12`).
+* Summarize the change and note any setup or configuration steps.
+* State what validation was performed and include screenshots for visible UI changes when useful.
+* Have its review feedback addressed and required automated checks passing before merge.
+
+Use **Squash and merge** so each issue lands as one readable commit on `develop`; keep the squash commit title in Conventional Commits format. If working alone, review the PR and its diff yourself before merging. When collaborating, require at least one approval from another contributor.
+
+Even when working alone, Pull Requests are used to maintain a professional workflow and provide a reviewable development history.
+
+### Releases
+
+When `develop` is ready for a stable release, open a Pull Request from `develop` into `main`. Review the complete release diff, confirm required checks pass, and merge only after approval. `main` must contain release-ready code; ongoing work stays on `develop`.
+
+### GitHub branch protection
+
+Configure rulesets for `main` and `develop` to:
+
+* Require changes to arrive through a Pull Request; block direct pushes and force pushes.
+* Require applicable automated checks before merging once CI checks are configured.
+* In a team, require at least one approval from another contributor. When working alone, require a PR but do not require an approval from a second person.
+
+Until CI is configured, the PR author must record the manual validation performed. Do not claim a check passed unless it was actually run.
 
 ---
 
 ## 13. Current Status
 
-The project is currently in the initial repository setup phase.
-
-No frontend or backend application has been implemented yet.
+The initial technical foundation is in place: Angular frontend, FastAPI backend, local PostgreSQL configuration, and a backend health check. Authentication and product features have not yet been implemented.
