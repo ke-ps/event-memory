@@ -328,4 +328,4 @@ Until CI is configured, the PR author must record the manual validation performe
 
 ## 13. Current Status
 
-The initial technical foundation is in place: Angular frontend, FastAPI backend, local PostgreSQL configuration, and a backend health check. Authentication and product features have not yet been implemented.
+The initial technical foundation is in place: Angular frontend, FastAPI backend, local PostgreSQL configuration, and a backend health check. The `feature/authentication` branch implements Firebase registration, sign-in and sign-out, plus backend verification of Firebase identity tokens. Frontend route protection and product features remain pending. Manual registration, sign-in, sign-out, backend identity verification, and unauthenticated API rejection have been confirmed.

@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     postgres_user: str = "event_memory"
     postgres_password: str = ""
     frontend_origin: str = "http://localhost:4200"
+    firebase_project_id: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 

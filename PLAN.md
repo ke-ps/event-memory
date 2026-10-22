@@ -41,12 +41,12 @@ El primer producto desarrollado será un MVP orientado a bodas.
 
 **Objetivo:** permitir que las parejas puedan gestionar sus eventos mediante una cuenta.
 
-* [ ] Configurar Firebase Authentication.
-* [ ] Registro.
-* [ ] Inicio de sesión.
-* [ ] Cierre de sesión.
+* [x] Configurar Firebase Authentication.
+* [x] Registro.
+* [x] Inicio de sesión.
+* [x] Cierre de sesión.
 * [ ] Protección de rutas.
-* [ ] Integración del usuario autenticado con el backend.
+* [x] Integración del usuario autenticado con el backend.
 
 ---
 
