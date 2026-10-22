@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 import { HealthService } from './services/health.service';
 
@@ -7,14 +8,10 @@ type BackendStatus = 'checking' | 'connected' | 'unavailable';
 @Component({
   selector: 'app-root',
   standalone: true,
+  imports: [RouterOutlet],
   template: `
     <main>
-      <p class="eyebrow">Event Memory</p>
-      <h1>Los recuerdos de vuestro día, en un solo lugar.</h1>
-      <p class="intro">
-        Estamos preparando un espacio para compartir la información y las fotos
-        de cada celebración.
-      </p>
+      <router-outlet />
       <section class="connection" aria-labelledby="connection-title">
         <h2 id="connection-title">Conexión con el backend</h2>
         <p class="status" role="status" aria-live="polite">
@@ -47,23 +44,6 @@ type BackendStatus = 'checking' | 'connected' | 'unavailable';
       margin: 0 auto;
       padding: 3rem 1.5rem;
     }
-    .eyebrow {
-      color: #8b5e52;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-    h1 {
-      max-width: 680px;
-      margin: 0.5rem 0 1rem;
-      color: #332a28;
-      font-family: Georgia, serif;
-      font-size: clamp(2.5rem, 8vw, 5rem);
-      font-weight: 400;
-      line-height: 1.05;
-    }
-    .intro { max-width: 540px; color: #665c58; font-size: 1.125rem; line-height: 1.7; }
     .connection {
       max-width: 540px;
       margin-top: 2rem;
