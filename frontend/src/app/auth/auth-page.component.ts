@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import type { User } from 'firebase/auth';
 
 import { AuthApiService, type AuthIdentity } from '../services/auth-api.service';
@@ -10,7 +11,7 @@ type AuthMode = 'sign-in' | 'register';
 @Component({
   selector: 'app-auth-page',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   template: `
     <section class="auth-card" aria-labelledby="auth-title">
       <p class="eyebrow">Event Memory</p>
@@ -18,6 +19,7 @@ type AuthMode = 'sign-in' | 'register';
       @if (authService.currentUser(); as user) {
         <h1 id="auth-title">Hola, {{ user.email }}</h1>
         <p>Tu cuenta está conectada.</p>
+        <a routerLink="/dashboard">Ir a mi espacio</a>
         @if (identity(); as verifiedIdentity) {
           <p class="success" role="status">
             Identidad verificada por el backend: {{ verifiedIdentity.uid }}

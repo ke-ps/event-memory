@@ -14,11 +14,38 @@ import { firebaseAuth, isFirebaseConfigured } from './firebase-auth';
 export class AuthService {
   readonly isConfigured = isFirebaseConfigured;
   readonly currentUser = signal<User | null>(null);
+  private readonly initialAuthState: Promise<User | null>;
 
   constructor() {
-    if (firebaseAuth) {
-      onAuthStateChanged(firebaseAuth, (user) => this.currentUser.set(user));
+    if (!firebaseAuth) {
+      this.initialAuthState = Promise.resolve(null);
+      return;
     }
+
+    const auth = firebaseAuth;
+    this.initialAuthState = new Promise((resolve) => {
+      let isInitialState = true;
+      onAuthStateChanged(
+        auth,
+        (user) => {
+          this.currentUser.set(user);
+          if (isInitialState) {
+            isInitialState = false;
+            resolve(user);
+          }
+        },
+        () => {
+          if (isInitialState) {
+            isInitialState = false;
+            resolve(null);
+          }
+        },
+      );
+    });
+  }
+
+  waitForInitialAuthState(): Promise<User | null> {
+    return this.initialAuthState;
   }
 
   register(email: string, password: string): Promise<UserCredential> {
