@@ -45,7 +45,7 @@ El primer producto desarrollado será un MVP orientado a bodas.
 * [x] Registro.
 * [x] Inicio de sesión.
 * [x] Cierre de sesión.
-* [ ] Protección de rutas.
+* [x] Protección de rutas.
 * [x] Integración del usuario autenticado con el backend.
 
 ---
