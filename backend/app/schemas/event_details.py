@@ -21,4 +21,4 @@ def validate_event_details(event_type: str, details: dict[str, Any]) -> dict[str
     schema = EVENT_DETAILS_SCHEMAS.get(event_type)
     if schema is None:
         raise UnknownEventTypeError(event_type)
-    return schema.model_validate(details).model_dump()
+    return schema.model_validate(details).model_dump(mode="json")

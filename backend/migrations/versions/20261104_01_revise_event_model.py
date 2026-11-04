@@ -82,7 +82,7 @@ def upgrade() -> None:
         INSERT INTO event_locations (id, event_id, label, venue_name, address, position)
         SELECT gen_random_uuid(), id, 'Celebración', left(location, 150), left(location, 300), 0
         FROM events
-        WHERE location IS NOT NULL
+        WHERE location IS NOT NULL AND btrim(location) <> ''
         """
     )
 
@@ -125,7 +125,7 @@ def downgrade() -> None:
         SET partner_one_name = COALESCE(details->>'partner_one_name', ''),
             partner_two_name = COALESCE(details->>'partner_two_name', ''),
             location = (
-                SELECT event_locations.venue_name
+                SELECT left(COALESCE(event_locations.address, event_locations.venue_name), 500)
                 FROM event_locations
                 WHERE event_locations.event_id = events.id AND event_locations.position = 0
                 LIMIT 1

@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-11-04
 **Fase:** 3 — Gestión del evento (tarea «Revisar el modelo»)
-**Estado:** aprobado en conversación, pendiente de revisión del documento
+**Estado:** implementado
 
 ## 1. Objetivo
 
