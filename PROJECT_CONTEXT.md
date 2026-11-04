@@ -340,13 +340,20 @@ Because releases need merge commits, keep both **Allow squash merging** and **Al
 Configure rulesets for `main` and `develop` to:
 
 * Require changes to arrive through a Pull Request; block direct pushes and force pushes.
-* Require applicable automated checks before merging once CI checks are configured.
+* Require the `Backend` and `Frontend` CI checks to pass before merging.
 * In a team, require at least one approval from another contributor. When working alone, require a PR but do not require an approval from a second person.
 
-Until CI is configured, the PR author must record the manual validation performed. Do not claim a check passed unless it was actually run.
+### Continuous integration
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every Pull Request and push to `develop` and `main`:
+
+* **Backend:** Ruff lint and format check, pytest, and Alembic migrations against a PostgreSQL service followed by `alembic check` to detect models that are out of sync with migrations.
+* **Frontend:** ESLint, Prettier format check, Vitest unit tests and production build. CI creates `environment.local.ts` from the example file because the real one is not versioned.
+
+The PR author must still record any manual validation performed that CI does not cover. Do not claim a check passed unless it was actually run.
 
 ---
 
 ## 13. Current Status
 
-The initial technical foundation is in place: Angular frontend, FastAPI backend, local PostgreSQL configuration, and a backend health check. Firebase registration, sign-in and sign-out are implemented, and the backend verifies Firebase identity tokens. The frontend protects `/dashboard` by waiting for Firebase to restore the initial authentication state and redirects unauthenticated users to `/`. Manual validation confirmed that unauthenticated users are redirected, authenticated users can access the dashboard and remain there after reload, and signing out blocks dashboard access. The initial SQLAlchemy event model and Alembic migration are in place. Manual registration, sign-in, sign-out, backend identity verification, and unauthenticated API rejection have also been confirmed.
+The initial technical foundation is in place: Angular frontend, FastAPI backend, local PostgreSQL configuration, and a backend health check. Firebase registration, sign-in and sign-out are implemented, and the backend verifies Firebase identity tokens. The frontend protects `/dashboard` by waiting for Firebase to restore the initial authentication state and redirects unauthenticated users to `/`. Manual validation confirmed that unauthenticated users are redirected, authenticated users can access the dashboard and remain there after reload, and signing out blocks dashboard access. The initial SQLAlchemy event model and Alembic migration are in place. Quality tooling is configured: pytest and Ruff in the backend, Vitest, ESLint and Prettier in the frontend, and GitHub Actions CI running both on every Pull Request. Manual registration, sign-in, sign-out, backend identity verification, and unauthenticated API rejection have also been confirmed.
