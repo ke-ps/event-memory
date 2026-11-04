@@ -105,3 +105,6 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Extract translatable messages
+        run: npm run extract-i18n

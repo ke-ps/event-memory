@@ -137,6 +137,9 @@ npm test -- --watch=false # ejecutar los tests una sola vez
 npm run lint              # ESLint (angular-eslint)
 npm run format            # formatear el código con Prettier
 npm run format:check      # comprobar el formato sin modificar archivos
+npm run extract-i18n      # extraer los textos traducibles a src/locale/messages.xlf
 ```
+
+Todos los textos fijos de la interfaz se marcan para traducción con un id estable (`i18n="@@pantalla.elemento"` en las plantillas y `` $localize`:@@id:texto` `` en TypeScript). Después de añadir o cambiar textos, ejecuta `npm run extract-i18n` y guarda en el commit el `messages.xlf` actualizado.
 
 Los tests se ejecutan en Node.js con jsdom, sin abrir un navegador. Los archivos de test usan el sufijo `.spec.ts` junto al código que prueban. La configuración de Prettier está en `package.json` y usa `endOfLine: auto` para aceptar tanto saltos de línea de Windows (CRLF) como de Linux (LF).

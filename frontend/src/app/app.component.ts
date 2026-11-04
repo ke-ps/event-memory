@@ -13,18 +13,27 @@ type BackendStatus = 'checking' | 'connected' | 'unavailable';
     <main>
       <router-outlet />
       <section class="connection" aria-labelledby="connection-title">
-        <h2 id="connection-title">Conexión con el backend</h2>
+        <h2 id="connection-title" i18n="@@connection.title">Conexión con el backend</h2>
         <p class="status" role="status" aria-live="polite">
           @if (backendStatus() === 'checking') {
-            Comprobando la conexión…
+            <ng-container i18n="@@connection.checking">Comprobando la conexión…</ng-container>
           } @else if (backendStatus() === 'connected') {
-            Backend conectado correctamente.
+            <ng-container i18n="@@connection.connected"
+              >Backend conectado correctamente.</ng-container
+            >
           } @else {
-            No se pudo conectar con el backend. Comprueba que esté en marcha y vuelve a intentarlo.
+            <ng-container i18n="@@connection.unavailable">
+              No se pudo conectar con el backend. Comprueba que esté en marcha y vuelve a
+              intentarlo.
+            </ng-container>
           }
         </p>
         <button type="button" (click)="checkBackend()" [disabled]="backendStatus() === 'checking'">
-          {{ backendStatus() === 'checking' ? 'Comprobando…' : 'Comprobar de nuevo' }}
+          @if (backendStatus() === 'checking') {
+            <ng-container i18n="@@connection.checkingShort">Comprobando…</ng-container>
+          } @else {
+            <ng-container i18n="@@connection.retry">Comprobar de nuevo</ng-container>
+          }
         </button>
       </section>
     </main>
