@@ -9,7 +9,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "format": "prettier --write src",
-    "format:check": "prettier --check src"
+    "format:check": "prettier --check src",
+    "extract-i18n": "ng extract-i18n --output-path src/locale"
   },
   "prettier": {
     "printWidth": 100,
@@ -40,6 +41,7 @@
     "@angular/build": "^21.2.0",
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
+    "@angular/localize": "^21.2.25",
     "@eslint/js": "^10.0.1",
     "angular-eslint": "21.4.0",
     "eslint": "^10.3.0",
