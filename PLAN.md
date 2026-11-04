@@ -39,7 +39,7 @@ El primer producto es un **MVP para bodas**. La plataforma está pensada para ad
 
 ### Cuentas y eventos
 
-* Una cuenta puede tener **varios eventos** en el modelo de datos, pero en el MVP solo puede tener **un evento activo**. La regla se aplica en el código, no en la base de datos, para poder relajarla sin migraciones (por ejemplo, para profesionales).
+* Una cuenta puede tener **varios eventos** en el modelo de datos, pero en el MVP solo puede tener **un evento**. La regla se aplica en el código, no en la base de datos, para poder relajarla sin migraciones (por ejemplo, para profesionales).
 * En el MVP el único tipo es **boda**. El formulario de creación no muestra selector de tipo; la API recibe el tipo y solo acepta `wedding`. **(propuesta)**
 * El modelo separa los datos comunes de los datos propios de cada tipo, para que añadir un tipo nuevo no obligue a rediseñar la tabla de eventos.
 
@@ -140,15 +140,15 @@ En el MVP los módulos son secciones de información que el organizador activa y
 **Objetivo:** el organizador crea y gestiona su boda desde el panel.
 
 * [x] Diseñar el modelo inicial de eventos.
-* [ ] Revisar el modelo: datos comunes y datos propios del tipo, zona horaria, URL pública y estado borrador/publicado.
+* [x] Revisar el modelo: datos comunes y datos propios del tipo, zona horaria, URL pública y estado borrador/publicado.
 * [ ] Respuestas de error de la API con códigos estables (base para la traducción).
 * [ ] Preparar el frontend para traducción (i18n de Angular, configuración regional `es-ES`).
 * [ ] Crear evento (API y formulario en el panel).
 * [ ] Consultar el evento propio.
 * [ ] Editar el evento.
-* [ ] Desactivar el evento.
+* [ ] Eliminar el evento (borrado definitivo con confirmación).
 
-**Terminado cuando:** un organizador autenticado puede crear, ver, editar y desactivar su boda desde el panel, no puede crear un segundo evento activo y no puede acceder a eventos de otros usuarios.
+**Terminado cuando:** un organizador autenticado puede crear, ver, editar y eliminar su boda desde el panel, no puede crear un segundo evento y no puede acceder a eventos de otros usuarios.
 
 ### Fase 4 — Página pública
 

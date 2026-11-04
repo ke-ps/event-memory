@@ -125,17 +125,20 @@ Supabase Storage stores event photographs. Photographs are not stored in Postgre
 
 PostgreSQL is the primary relational database, accessed through SQLAlchemy. Schema changes are managed through Alembic migrations; applied migrations are never modified. A naming convention on the declarative base keeps constraint and index names predictable.
 
-### Initial event model
+### Event model
 
-The `events` table stores the initial wedding event data:
+The `events` table stores the data common to every event type:
 
 * UUID identifier and Firebase UID of the owner (indexed).
-* Event type, initially `wedding`.
-* Names of the two partners.
-* Optional event date, location, and main photograph storage path.
-* Active status and creation/update timestamps.
+* Event type (`wedding` in the MVP), title and unique public URL identifier (`slug`).
+* `status`: `draft` or `published`, stored as text with a `CHECK` constraint.
+* Optional event date and start time, and the time zone (default `Europe/Madrid`).
+* `details`: a JSONB column with the data specific to the event type, validated with Pydantic according to `event_type` (`app/schemas/event_details.py`).
+* Optional main photograph storage path and creation/update timestamps.
 
-Firebase remains an external identity provider, so the owner UID is not a PostgreSQL foreign key. The model is reviewed at the start of Phase 3 to separate common event data from type-specific data and to add time zone, public URL identifier and draft/published status (see `PLAN.md`).
+The `event_locations` table holds one or more places per event (label, venue name, address and display position). It references `events` with `ON DELETE CASCADE`.
+
+Firebase remains an external identity provider, so the owner UID is not a PostgreSQL foreign key.
 
 ---
 
@@ -144,7 +147,9 @@ Firebase remains an external identity provider, so the owner UID is not a Postgr
 Agreed decisions that apply to new code. Items marked *pending* are implemented in Phase 3.
 
 * **Event types:** common event data is separated from type-specific data so new types do not require redesigning the events table. Only `wedding` is accepted in the MVP.
-* **One active event per account:** enforced in the service layer, not with a database constraint, so it can be relaxed later.
+* **One event per account:** enforced in the service layer, not with a database constraint, so it can be relaxed later.
+* **Event status:** an event is `draft` or `published`; there is no activation or deactivation. Deleting an event is permanent (no trash in the MVP).
+* **Type-specific data:** stored in the `details` JSONB column and validated per `event_type` with Pydantic, so a new event type needs a schema but no migration.
 * **API errors (pending):** error responses carry a stable machine-readable `code` in addition to a human-readable message, so the frontend can show translated messages.
 * **Internationalization (pending):** the UI is in Spanish and uses Angular's built-in i18n from the start; no third-party translation library. Dates and numbers are formatted through the locale (`es-ES`).
 * **Time zones:** event times are stored with the event's time zone and displayed in that zone.
