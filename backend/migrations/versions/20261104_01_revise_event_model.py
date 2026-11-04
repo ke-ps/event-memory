@@ -72,7 +72,7 @@ def upgrade() -> None:
                 'partner_one_name', partner_one_name,
                 'partner_two_name', partner_two_name
             ),
-            title = partner_one_name || ' y ' || partner_two_name,
+            title = left(partner_one_name || ' y ' || partner_two_name, 150),
             slug = 'evento-' || left(replace(id::text, '-', ''), 12),
             status = 'draft'
         """
@@ -80,7 +80,7 @@ def upgrade() -> None:
     op.execute(
         """
         INSERT INTO event_locations (id, event_id, label, venue_name, address, position)
-        SELECT gen_random_uuid(), id, 'Celebración', location, location, 0
+        SELECT gen_random_uuid(), id, 'Celebración', left(location, 150), left(location, 300), 0
         FROM events
         WHERE location IS NOT NULL
         """
@@ -113,6 +113,7 @@ def downgrade() -> None:
     )
 
     # Restore the old columns (required ones nullable until backfilled).
+    # Locations with position > 0 cannot be represented in the old schema and are dropped.
     op.add_column("events", sa.Column("is_active", sa.Boolean(), server_default=sa.true(), nullable=False))
     op.add_column("events", sa.Column("location", sa.String(length=500), nullable=True))
     op.add_column("events", sa.Column("partner_two_name", sa.String(length=100), nullable=True))
