@@ -326,6 +326,15 @@ Even when working alone, Pull Requests are used to maintain a professional workf
 
 When `develop` is ready for a stable release, open a Pull Request from `develop` into `main`. Review the complete release diff, confirm required checks pass, and merge only after approval. `main` must contain release-ready code; ongoing work stays on `develop`.
 
+Merge release Pull Requests with **Create a merge commit**, never with Squash and merge. Squashing `develop` into `main` creates a commit that `develop` does not contain, so the branches diverge and later releases show false diffs or conflicts. A merge commit keeps `main` and `develop` sharing the same history.
+
+| Pull Request | Merge method |
+| --- | --- |
+| `feature/*`, `fix/*`, `docs/*`, `refactor/*`, `chore/*` → `develop` | Squash and merge |
+| `develop` → `main` (release) | Create a merge commit |
+
+Because releases need merge commits, keep both **Allow squash merging** and **Allow merge commits** enabled in the repository settings, and choose the method that matches the Pull Request type.
+
 ### GitHub branch protection
 
 Configure rulesets for `main` and `develop` to:
