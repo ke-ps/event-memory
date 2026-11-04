@@ -67,8 +67,10 @@ python -m venv .venv
 Activa el entorno virtual (`.venv\\Scripts\\activate.bat` en CMD, `.venv\\Scripts\\Activate.ps1` en PowerShell o `source .venv/bin/activate` en macOS/Linux) e instala las dependencias:
 
 ```bash
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
 ```
+
+`requirements-dev.txt` incluye las dependencias de la aplicación (`requirements.txt`) y las herramientas de desarrollo. En producción instala solo `requirements.txt`.
 
 Arranca la API:
 
@@ -78,6 +80,18 @@ uvicorn app.main:app --reload
 
 - Health check: `http://localhost:8000/api/v1/health`
 - Documentación interactiva: `http://localhost:8000/docs`
+
+### Tests y calidad del backend
+
+Desde `backend`, con el entorno virtual activado:
+
+```bash
+python -m pytest              # tests
+python -m ruff check .        # lint
+python -m ruff format .       # formatear el código
+```
+
+Los tests no necesitan PostgreSQL ni Firebase: las dependencias externas se sustituyen en cada test. La configuración de pytest y Ruff está en `backend/pyproject.toml`. Los archivos de `migrations/versions` se excluyen del lint porque son migraciones generadas que no deben modificarse una vez aplicadas.
 
 ## Frontend
 
