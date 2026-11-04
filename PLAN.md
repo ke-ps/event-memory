@@ -54,7 +54,7 @@ El primer producto desarrollado será un MVP orientado a bodas.
 
 **Objetivo:** permitir a una pareja crear y gestionar una boda.
 
-* [ ] Diseñar modelo de datos de eventos.
+* [x] Diseñar modelo de datos de eventos.
 * [ ] Crear evento.
 * [ ] Consultar evento.
 * [ ] Editar evento.
