@@ -17,44 +17,53 @@ type AuthMode = 'sign-in' | 'register';
       <p class="eyebrow">Event Memory</p>
 
       @if (authService.currentUser(); as user) {
-        <h1 id="auth-title">Hola, {{ user.email }}</h1>
-        <p>Tu cuenta está conectada.</p>
-        <a routerLink="/dashboard">Ir a mi espacio</a>
+        <h1 id="auth-title" i18n="@@auth.greeting">Hola, {{ user.email }}</h1>
+        <p i18n="@@auth.connected">Tu cuenta está conectada.</p>
+        <a routerLink="/dashboard" i18n="@@auth.goToDashboard">Ir a mi espacio</a>
         @if (identity(); as verifiedIdentity) {
-          <p class="success" role="status">
+          <p class="success" role="status" i18n="@@auth.identityVerified">
             Identidad verificada por el backend: {{ verifiedIdentity.uid }}
           </p>
         } @else if (verificationInProgress()) {
-          <p class="hint" role="status">Verificando tu identidad con el backend…</p>
+          <p class="hint" role="status" i18n="@@auth.verifyingIdentity">
+            Verificando tu identidad con el backend…
+          </p>
         } @else {
           <p class="field-error" role="alert">{{ errorMessage() }}</p>
         }
-        <button type="button" (click)="logout()" [disabled]="loading()">Cerrar sesión</button>
+        <button type="button" (click)="logout()" [disabled]="loading()" i18n="@@auth.signOut">
+          Cerrar sesión
+        </button>
       } @else {
-        <h1 id="auth-title">{{ mode() === 'sign-in' ? 'Inicia sesión' : 'Crea tu cuenta' }}</h1>
-        <p class="intro">
-          {{
-            mode() === 'sign-in'
-              ? 'Accede para empezar a preparar vuestro espacio.'
-              : 'Regístrate para empezar a preparar vuestro espacio.'
-          }}
-        </p>
+        @if (mode() === 'sign-in') {
+          <h1 id="auth-title" i18n="@@auth.signIn.title">Inicia sesión</h1>
+          <p class="intro" i18n="@@auth.signIn.intro">
+            Accede para empezar a preparar vuestro espacio.
+          </p>
+        } @else {
+          <h1 id="auth-title" i18n="@@auth.register.title">Crea tu cuenta</h1>
+          <p class="intro" i18n="@@auth.register.intro">
+            Regístrate para empezar a preparar vuestro espacio.
+          </p>
+        }
 
         @if (!authService.isConfigured) {
-          <p class="notice" role="status">
+          <p class="notice" role="status" i18n="@@auth.firebaseNotConfigured">
             Falta la configuración local de Firebase. Sigue los pasos de desarrollo local para
             conectarla.
           </p>
         }
 
         <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-          <label for="email">Correo electrónico</label>
+          <label for="email" i18n="@@auth.email.label">Correo electrónico</label>
           <input id="email" type="email" formControlName="email" autocomplete="email" />
           @if (form.controls.email.touched && form.controls.email.invalid) {
-            <p class="field-error">Escribe un correo electrónico válido.</p>
+            <p class="field-error" i18n="@@auth.email.invalid">
+              Escribe un correo electrónico válido.
+            </p>
           }
 
-          <label for="password">Contraseña</label>
+          <label for="password" i18n="@@auth.password.label">Contraseña</label>
           <input
             id="password"
             type="password"
@@ -66,7 +75,9 @@ type AuthMode = 'sign-in' | 'register';
             form.controls.password.touched &&
             form.controls.password.invalid
           ) {
-            <p class="field-error">La contraseña debe tener al menos 6 caracteres.</p>
+            <p class="field-error" i18n="@@auth.password.tooShort">
+              La contraseña debe tener al menos 6 caracteres.
+            </p>
           }
 
           @if (errorMessage()) {
@@ -74,16 +85,26 @@ type AuthMode = 'sign-in' | 'register';
           }
 
           <button type="submit" [disabled]="loading() || form.invalid || !authService.isConfigured">
-            {{ loading() ? 'Un momento…' : mode() === 'sign-in' ? 'Entrar' : 'Crear cuenta' }}
+            @if (loading()) {
+              <ng-container i18n="@@common.loading">Un momento…</ng-container>
+            } @else if (mode() === 'sign-in') {
+              <ng-container i18n="@@auth.signIn.submit">Entrar</ng-container>
+            } @else {
+              <ng-container i18n="@@auth.register.submit">Crear cuenta</ng-container>
+            }
           </button>
         </form>
 
         <button class="link-button" type="button" (click)="toggleMode()">
-          {{
-            mode() === 'sign-in'
-              ? '¿Aún no tienes cuenta? Regístrate'
-              : '¿Ya tienes cuenta? Inicia sesión'
-          }}
+          @if (mode() === 'sign-in') {
+            <ng-container i18n="@@auth.switchToRegister"
+              >¿Aún no tienes cuenta? Regístrate</ng-container
+            >
+          } @else {
+            <ng-container i18n="@@auth.switchToSignIn"
+              >¿Ya tienes cuenta? Inicia sesión</ng-container
+            >
+          }
         </button>
       }
     </section>
@@ -233,7 +254,7 @@ export class AuthPageComponent {
       }
     } catch {
       this.errorMessage.set(
-        'No se pudo completar la operación. Comprueba los datos y que Firebase y el backend estén configurados.',
+        $localize`:@@auth.error.operationFailed:No se pudo completar la operación. Comprueba los datos y que Firebase y el backend estén configurados.`,
       );
     } finally {
       this.loading.set(false);
@@ -246,7 +267,9 @@ export class AuthPageComponent {
       await this.authService.signOut();
       this.identity.set(null);
     } catch {
-      this.errorMessage.set('No se pudo cerrar la sesión. Inténtalo de nuevo.');
+      this.errorMessage.set(
+        $localize`:@@auth.error.signOutFailed:No se pudo cerrar la sesión. Inténtalo de nuevo.`,
+      );
     } finally {
       this.loading.set(false);
     }
@@ -259,7 +282,7 @@ export class AuthPageComponent {
       this.identity.set(await this.authApi.verifyIdentity(idToken));
     } catch {
       this.errorMessage.set(
-        'La sesión está iniciada, pero el backend no pudo verificar la identidad. Comprueba su configuración.',
+        $localize`:@@auth.error.verificationFailed:La sesión está iniciada, pero el backend no pudo verificar la identidad. Comprueba su configuración.`,
       );
     } finally {
       this.verificationInProgress.set(false);

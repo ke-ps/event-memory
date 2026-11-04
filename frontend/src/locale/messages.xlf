@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="es" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="connection.title" datatype="html">
+        <source>Conexión con el backend</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">16,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.checking" datatype="html">
+        <source>Comprobando la conexión…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.connected" datatype="html">
+        <source>Backend conectado correctamente.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">22,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.unavailable" datatype="html">
+        <source> No se pudo conectar con el backend. Comprueba que esté en marcha y vuelve a intentarlo. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">26,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.checkingShort" datatype="html">
+        <source>Comprobando…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">33,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.retry" datatype="html">
+        <source>Comprobar de nuevo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.greeting" datatype="html">
+        <source>Hola, <x id="INTERPOLATION" equiv-text="{{ user.email }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">20,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.connected" datatype="html">
+        <source>Tu cuenta está conectada.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">21,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.goToDashboard" datatype="html">
+        <source>Ir a mi espacio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.identityVerified" datatype="html">
+        <source> Identidad verificada por el backend: <x id="INTERPOLATION" equiv-text="{{ verifiedIdentity.uid }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">25,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.verifyingIdentity" datatype="html">
+        <source> Verificando tu identidad con el backend… </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">29,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.signOut" datatype="html">
+        <source> Cerrar sesión </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">35,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.signIn.title" datatype="html">
+        <source>Inicia sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.signIn.intro" datatype="html">
+        <source> Accede para empezar a preparar vuestro espacio. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.title" datatype="html">
+        <source>Crea tu cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.intro" datatype="html">
+        <source> Regístrate para empezar a preparar vuestro espacio. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.firebaseNotConfigured" datatype="html">
+        <source> Falta la configuración local de Firebase. Sigue los pasos de desarrollo local para conectarla. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">52,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.email.label" datatype="html">
+        <source>Correo electrónico</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.email.invalid" datatype="html">
+        <source> Escribe un correo electrónico válido. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">62,64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.password.label" datatype="html">
+        <source>Contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">66,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.password.tooShort" datatype="html">
+        <source> La contraseña debe tener al menos 6 caracteres. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">79,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.loading" datatype="html">
+        <source>Un momento…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">89,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.signIn.submit" datatype="html">
+        <source>Entrar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">91,92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.submit" datatype="html">
+        <source>Crear cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">93,95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.switchToRegister" datatype="html">
+        <source>¿Aún no tienes cuenta? Regístrate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">101,103</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.switchToSignIn" datatype="html">
+        <source>¿Ya tienes cuenta? Inicia sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">105,107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.error.operationFailed" datatype="html">
+        <source>No se pudo completar la operación. Comprueba los datos y que Firebase y el backend estén configurados.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">257</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.error.signOutFailed" datatype="html">
+        <source>No se pudo cerrar la sesión. Inténtalo de nuevo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">271</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.error.verificationFailed" datatype="html">
+        <source>La sesión está iniciada, pero el backend no pudo verificar la identidad. Comprueba su configuración.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">285</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.title" datatype="html">
+        <source>Tu espacio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.signedInAs" datatype="html">
+        <source> Has iniciado sesión como <x id="INTERPOLATION" equiv-text="{{ authService.currentUser()?.email }}"/>. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.intro" datatype="html">
+        <source> Desde aquí podrás gestionar tu evento. Esta sección se irá construyendo en los siguientes pasos. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">18,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.backToAccount" datatype="html">
+        <source>Volver a mi cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">21,25</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

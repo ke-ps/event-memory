@@ -10,13 +10,15 @@ import { AuthService } from '../services/auth.service';
   template: `
     <main class="dashboard" aria-labelledby="dashboard-title">
       <p class="eyebrow">Event Memory</p>
-      <h1 id="dashboard-title">Tu espacio</h1>
-      <p>Has iniciado sesión como {{ authService.currentUser()?.email }}.</p>
-      <p>
+      <h1 id="dashboard-title" i18n="@@dashboard.title">Tu espacio</h1>
+      <p i18n="@@dashboard.signedInAs">
+        Has iniciado sesión como {{ authService.currentUser()?.email }}.
+      </p>
+      <p i18n="@@dashboard.intro">
         Desde aquí podrás gestionar tu evento. Esta sección se irá construyendo en los siguientes
         pasos.
       </p>
-      <a routerLink="/">Volver a mi cuenta</a>
+      <a routerLink="/" i18n="@@dashboard.backToAccount">Volver a mi cuenta</a>
     </main>
   `,
   styles: `
