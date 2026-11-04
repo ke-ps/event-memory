@@ -1,56 +1,21 @@
 # Project Context
 
-## 1. Project Overview
-
-Event Memory is a web platform for creating digital pages for events and sharing event information and memories with attendees.
-
-The first product version is focused on weddings.
-
-The architecture must allow the platform to support additional event types in the future without requiring a complete redesign.
+Technical architecture and decisions of Event Memory. Product scope, decisions and roadmap live in `PLAN.md`; rules for AI-assisted development in `AGENTS.md`; the Git workflow in `docs/git-workflow.md`; local setup in `docs/local-development.md`.
 
 ---
 
-## 2. Current MVP
+## 1. Overview
 
-The MVP focuses exclusively on weddings.
-
-### Couple
-
-The couple can:
-
-* Create an account.
-* Authenticate.
-* Create and edit a wedding.
-* Configure basic event information.
-* Add a main photograph.
-* Select an available template.
-* Manage guests.
-* View RSVP responses.
-* View photographs shared by attendees.
-
-### Guest
-
-Guests do not need to create an account.
-
-They can:
-
-* Access a public event page.
-* View wedding information.
-* View the event location.
-* Confirm attendance.
-* Specify the number of attendees.
-* Provide allergy or dietary restriction information.
-* Upload photographs.
+Event Memory is a web platform for creating event pages and sharing information, attendance confirmations and photographs with guests. The first product is a wedding MVP. The architecture must support additional event types (christenings, birthdays…) and optional modules without a complete redesign.
 
 ---
 
-## 3. Technology Stack
+## 2. Technology Stack
 
 ### Frontend
 
-* Angular
-* TypeScript
-* Angular Signals
+* Angular (standalone components) and TypeScript
+* Angular Signals for reactive state
 * Angular Router
 * Reactive Forms
 * Angular Material when appropriate
@@ -59,8 +24,8 @@ They can:
 
 * Python
 * FastAPI
-* SQLAlchemy
-* Pydantic
+* SQLAlchemy 2 and Alembic
+* Pydantic and pydantic-settings
 * PostgreSQL
 
 ### External Services
@@ -68,292 +33,124 @@ They can:
 * Firebase Authentication
 * Supabase Storage
 
+### Quality tooling
+
+* Backend: pytest and Ruff.
+* Frontend: Vitest (Angular unit-test builder with jsdom), angular-eslint and Prettier.
+* CI: GitHub Actions (see `docs/git-workflow.md`).
+
 ---
 
-## 4. Repository Structure
-
-The project uses a monorepo.
+## 3. Repository Structure
 
 ```text
 event-memory/
-├── frontend/
+├── .claude/skills/       # Project skills for Claude Code (session workflow)
+├── .github/workflows/    # CI
 ├── backend/
+│   ├── app/
+│   │   ├── api/routes/   # Routers (HTTP layer)
+│   │   ├── core/         # Configuration
+│   │   ├── db/           # Declarative base and session
+│   │   ├── models/       # SQLAlchemy models
+│   │   └── services/     # Business logic
+│   ├── migrations/       # Alembic
+│   └── tests/
+├── frontend/
+│   └── src/
+│       ├── app/          # Feature folders (auth, dashboard) and services
+│       └── environments/
 ├── docs/
 ├── AGENTS.md
+├── CLAUDE.md
 ├── PLAN.md
 ├── PROJECT_CONTEXT.md
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
 The frontend and backend are independent applications contained in the same repository.
 
 ---
 
-## 5. Backend Architecture
+## 4. Backend Architecture
 
-The backend will follow a layered architecture:
+The backend follows a layered architecture:
 
 ```text
-Router
-   ↓
-Service
-   ↓
-Repository
-   ↓
-Database
+Router → Service → Repository → Database
 ```
 
 ### Router
 
-Responsible for:
-
-* HTTP endpoints.
-* Request and response handling.
+* HTTP endpoints, request and response handling.
 * Dependency injection.
 * HTTP-level validation and status codes.
 
-Routers should not contain business logic.
+Routers do not contain business logic.
 
 ### Service
 
-Responsible for:
-
-* Business rules.
-* Application logic.
+* Business rules and application logic.
 * Coordinating repositories and external services.
 
 ### Repository
 
-Responsible for:
+* Database access, queries and persistence operations.
 
-* Database access.
-* Queries.
-* Persistence operations.
-
-Repositories should not contain business rules.
+Repositories do not contain business rules. The repository layer and request/response schemas are introduced with the first CRUD resource (events).
 
 ---
 
-## 6. Frontend Architecture
+## 5. Frontend Architecture
 
-The frontend will use Angular standalone components.
-
-Responsibilities should be separated between:
-
-* Components.
-* Services.
-* Models/types.
-* Routing.
-* State management.
-
-Angular Signals will be used for local and shared reactive state when appropriate.
-
-Business logic should not be unnecessarily duplicated between components.
+The frontend uses Angular standalone components with responsibilities separated between components, services, models/types, routing and state. Angular Signals are used for local and shared reactive state when appropriate. Components focus on presentation and interaction; reusable logic lives in services.
 
 ---
 
-## 7. Authentication
+## 6. Authentication
 
-Firebase Authentication will be responsible for user authentication.
+Firebase Authentication handles user authentication in the frontend. The backend verifies Firebase identity tokens before allowing access to protected resources. The owner of a resource is always taken from the verified token, never from the request body.
 
-The backend will validate the authenticated user's identity before allowing access to protected resources.
-
-Guests accessing public event pages will not require an application account.
+Guests do not have accounts. Public event pages and guest actions (attendance confirmation, photo uploads) are accessed through the event's public URL and, for confirmations, a personal guest link.
 
 ---
 
-## 8. File Storage
+## 7. File Storage
 
-Supabase Storage will be used for event photographs.
-
-Photographs should not be stored directly inside PostgreSQL.
-
-The database will store the metadata and references required to associate photographs with events.
+Supabase Storage stores event photographs. Photographs are not stored in PostgreSQL; the database stores metadata and the storage object path.
 
 ---
 
-## 9. Database
+## 8. Database
 
-PostgreSQL will be the primary relational database.
-
-SQLAlchemy will be used as the ORM/database abstraction layer.
-
-Database schema changes are managed through Alembic migrations.
+PostgreSQL is the primary relational database, accessed through SQLAlchemy. Schema changes are managed through Alembic migrations; applied migrations are never modified. A naming convention on the declarative base keeps constraint and index names predictable.
 
 ### Initial event model
 
 The `events` table stores the initial wedding event data:
 
-* UUID identifier and Firebase UID of the owner.
+* UUID identifier and Firebase UID of the owner (indexed).
 * Event type, initially `wedding`.
 * Names of the two partners.
 * Optional event date, location, and main photograph storage path.
 * Active status and creation/update timestamps.
 
-The main photograph field stores a Supabase Storage object path, not the image itself. The event gallery and its guest associations will use separate records in the photo-gallery phase. Firebase remains an external identity provider, so the owner UID is not a PostgreSQL foreign key.
+Firebase remains an external identity provider, so the owner UID is not a PostgreSQL foreign key. The model is reviewed at the start of Phase 3 to separate common event data from type-specific data and to add time zone, public URL identifier and draft/published status (see `PLAN.md`).
 
 ---
 
-## 10. Development Principles
+## 9. Architectural Decisions
 
-* Prefer simple solutions over premature abstraction.
-* Avoid unnecessary dependencies.
-* Keep responsibilities separated.
-* Validate data at appropriate boundaries.
-* Do not duplicate business logic unnecessarily.
-* Do not implement functionality that is not part of the current task.
-* Do not introduce architectural complexity without a concrete requirement.
-* Security and sensitive configuration must be handled through environment variables.
-* Changes should be small and reviewable.
+Agreed decisions that apply to new code. Items marked *pending* are implemented in Phase 3.
+
+* **Event types:** common event data is separated from type-specific data so new types do not require redesigning the events table. Only `wedding` is accepted in the MVP.
+* **One active event per account:** enforced in the service layer, not with a database constraint, so it can be relaxed later.
+* **API errors (pending):** error responses carry a stable machine-readable `code` in addition to a human-readable message, so the frontend can show translated messages.
+* **Internationalization (pending):** the UI is in Spanish and uses Angular's built-in i18n from the start; no third-party translation library. Dates and numbers are formatted through the locale (`es-ES`).
+* **Time zones:** event times are stored with the event's time zone and displayed in that zone.
 
 ---
 
-## 11. AI-Assisted Development
+## 10. Current Status
 
-AI tools may be used to assist with development.
-
-AI-generated changes must follow the existing architecture and project conventions.
-
-AI should:
-
-* Modify only files necessary for the requested task.
-* Avoid unrelated refactoring.
-* Explain significant architectural decisions.
-* Avoid introducing new dependencies without justification.
-* Preserve existing functionality.
-* Ask for confirmation before making large changes.
-* Ask for confirmation if a task requires modifying more than five files.
-
-AI must not:
-
-* Rewrite the architecture without approval.
-* Replace working code unnecessarily.
-* Add features outside the requested scope.
-* Commit secrets or credentials.
-* Modify project conventions without explicit approval.
-
----
-
-## 12. Git Workflow
-
-The project follows a lightweight Git Flow-inspired workflow. GitHub Issues track work, Pull Requests review changes, and only release-ready code is promoted to `main`.
-
-### Main branches
-
-```text
-main
-develop
-```
-
-`main` represents stable/release-ready code.
-
-`develop` is the integration branch for ongoing development.
-
-### Feature branches
-
-Before starting a change:
-
-1. Create or select a GitHub Issue describing the goal and acceptance criteria.
-2. Update the local `develop` branch from `origin/develop`.
-3. Create a short-lived branch from `develop` for that issue.
-
-Use these branch prefixes:
-
-```text
-feature/<short-description>
-fix/<short-description>
-docs/<short-description>
-refactor/<short-description>
-chore/<short-description>
-```
-
-Examples:
-
-```text
-feature/project-setup
-feature/authentication
-feature/event-management
-feature/photo-gallery
-```
-
-Additional examples across branch types:
-
-```text
-feature/guest-rsvp
-fix/event-date-validation
-docs/github-workflow
-refactor/event-repository
-chore/dependency-update
-```
-
-Do not develop directly on `main` or `develop`. Keep branches focused on one issue and delete them after they are merged.
-
-Example commands after selecting an Issue:
-
-```bash
-git switch develop
-git pull origin develop
-git switch -c feature/short-description
-```
-
-### Commits
-
-Commits follow Conventional Commits and describe one logical change. Use the issue number in the commit body when useful.
-
-```text
-feat(auth): add couple sign-in
-fix(events): validate event date
-docs(project): document GitHub workflow
-refactor(events): separate repository queries
-chore(project): update local setup
-```
-
-### Pull Requests
-
-Open a Pull Request from the task branch into `develop`. Each PR should:
-
-* Link the GitHub Issue and close it on merge (for example, `Closes #12`).
-* Summarize the change and note any setup or configuration steps.
-* State what validation was performed and include screenshots for visible UI changes when useful.
-* Have its review feedback addressed and required automated checks passing before merge.
-
-Use **Squash and merge** so each issue lands as one readable commit on `develop`; keep the squash commit title in Conventional Commits format. If working alone, review the PR and its diff yourself before merging. When collaborating, require at least one approval from another contributor.
-
-Even when working alone, Pull Requests are used to maintain a professional workflow and provide a reviewable development history.
-
-### Releases
-
-When `develop` is ready for a stable release, open a Pull Request from `develop` into `main`. Review the complete release diff, confirm required checks pass, and merge only after approval. `main` must contain release-ready code; ongoing work stays on `develop`.
-
-Merge release Pull Requests with **Create a merge commit**, never with Squash and merge. Squashing `develop` into `main` creates a commit that `develop` does not contain, so the branches diverge and later releases show false diffs or conflicts. A merge commit keeps `main` and `develop` sharing the same history.
-
-| Pull Request | Merge method |
-| --- | --- |
-| `feature/*`, `fix/*`, `docs/*`, `refactor/*`, `chore/*` → `develop` | Squash and merge |
-| `develop` → `main` (release) | Create a merge commit |
-
-Because releases need merge commits, keep both **Allow squash merging** and **Allow merge commits** enabled in the repository settings, and choose the method that matches the Pull Request type.
-
-### GitHub branch protection
-
-Configure rulesets for `main` and `develop` to:
-
-* Require changes to arrive through a Pull Request; block direct pushes and force pushes.
-* Require the `Backend` and `Frontend` CI checks to pass before merging.
-* In a team, require at least one approval from another contributor. When working alone, require a PR but do not require an approval from a second person.
-
-### Continuous integration
-
-GitHub Actions (`.github/workflows/ci.yml`) runs on every Pull Request and push to `develop` and `main`:
-
-* **Backend:** Ruff lint and format check, pytest, and Alembic migrations against a PostgreSQL service followed by `alembic check` to detect models that are out of sync with migrations.
-* **Frontend:** ESLint, Prettier format check, Vitest unit tests and production build. CI creates `environment.local.ts` from the example file because the real one is not versioned.
-
-The PR author must still record any manual validation performed that CI does not cover. Do not claim a check passed unless it was actually run.
-
----
-
-## 13. Current Status
-
-The initial technical foundation is in place: Angular frontend, FastAPI backend, local PostgreSQL configuration, and a backend health check. Firebase registration, sign-in and sign-out are implemented, and the backend verifies Firebase identity tokens. The frontend protects `/dashboard` by waiting for Firebase to restore the initial authentication state and redirects unauthenticated users to `/`. Manual validation confirmed that unauthenticated users are redirected, authenticated users can access the dashboard and remain there after reload, and signing out blocks dashboard access. The initial SQLAlchemy event model and Alembic migration are in place. Quality tooling is configured: pytest and Ruff in the backend, Vitest, ESLint and Prettier in the frontend, and GitHub Actions CI running both on every Pull Request. Manual registration, sign-in, sign-out, backend identity verification, and unauthenticated API rejection have also been confirmed.
+The technical foundation is in place: Angular frontend, FastAPI backend, local PostgreSQL configuration and a backend health check. Firebase registration, sign-in and sign-out are implemented, and the backend verifies Firebase identity tokens. The frontend protects `/dashboard` by waiting for Firebase to restore the initial authentication state and redirects unauthenticated users to `/`. The initial SQLAlchemy event model and Alembic migration are in place. Quality tooling is configured: pytest and Ruff in the backend, Vitest, ESLint and Prettier in the frontend, and GitHub Actions CI running both on every Pull Request, with branch protection requiring both checks.
