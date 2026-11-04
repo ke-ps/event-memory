@@ -150,7 +150,7 @@ Agreed decisions that apply to new code. Items marked *pending* are implemented 
 * **One event per account:** enforced in the service layer, not with a database constraint, so it can be relaxed later.
 * **Event status:** an event is `draft` or `published`; there is no activation or deactivation. Deleting an event is permanent (no trash in the MVP).
 * **Type-specific data:** stored in the `details` JSONB column and validated per `event_type` with Pydantic, so a new event type needs a schema but no migration.
-* **API errors (pending):** error responses carry a stable machine-readable `code` in addition to a human-readable message, so the frontend can show translated messages.
+* **API errors:** every error response is `{"code": "...", "message": "..."}`. `code` is the stable, machine-readable contract the frontend translates; `message` is a Spanish fallback that may change. Validation errors (422, `validation_error`) add `errors: [{"field": "...", "code": "..."}]` with Pydantic's error types. Services and routers raise `AppError(status_code, code, message)` from `app/core/errors.py`; the handlers registered in `main.py` also convert validation errors and generic HTTP errors (`not_found`, `method_not_allowed`…). Current codes: `missing_token`, `invalid_token` (401), `auth_unavailable` (503), `validation_error` (422). New codes use `snake_case` and are added to this list.
 * **Internationalization (pending):** the UI is in Spanish and uses Angular's built-in i18n from the start; no third-party translation library. Dates and numbers are formatted through the locale (`es-ES`).
 * **Time zones:** event times are stored with the event's time zone and displayed in that zone.
 

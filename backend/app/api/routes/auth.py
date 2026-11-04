@@ -1,8 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from app.core.errors import AppError
 from app.services.auth import (
     FirebaseAuthenticationUnavailableError,
     InvalidIdentityTokenError,
@@ -11,6 +12,7 @@ from app.services.auth import (
 
 router = APIRouter()
 bearer_scheme = HTTPBearer(auto_error=False)
+BEARER_CHALLENGE = {"WWW-Authenticate": "Bearer"}
 
 
 @router.get("/me", summary="Identidad autenticada")
@@ -18,22 +20,25 @@ def get_current_identity(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)],
 ) -> dict[str, str | None]:
     if credentials is None or credentials.scheme.lower() != "bearer":
-        raise HTTPException(
+        raise AppError(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Se requiere un token de acceso válido.",
-            headers={"WWW-Authenticate": "Bearer"},
+            code="missing_token",
+            message="Se requiere un token de acceso válido.",
+            headers=BEARER_CHALLENGE,
         )
 
     try:
         return verify_identity_token(credentials.credentials)
     except InvalidIdentityTokenError:
-        raise HTTPException(
+        raise AppError(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="El token de acceso no es válido o ha caducado.",
-            headers={"WWW-Authenticate": "Bearer"},
+            code="invalid_token",
+            message="El token de acceso no es válido o ha caducado.",
+            headers=BEARER_CHALLENGE,
         ) from None
     except FirebaseAuthenticationUnavailableError:
-        raise HTTPException(
+        raise AppError(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="El servicio de autenticación no está disponible.",
+            code="auth_unavailable",
+            message="El servicio de autenticación no está disponible.",
         ) from None
