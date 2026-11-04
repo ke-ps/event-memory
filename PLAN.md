@@ -34,6 +34,9 @@ El primer producto desarrollado será un MVP orientado a bodas.
 * [x] Definir estructura inicial del frontend.
 * [x] Crear health check del backend.
 * [x] Documentar cómo ejecutar el proyecto localmente.
+* [x] Configurar tests y lint del backend (pytest, Ruff).
+* [x] Configurar tests y lint del frontend (Vitest, ESLint, Prettier).
+* [x] Configurar integración continua (GitHub Actions).
 
 ---
 
