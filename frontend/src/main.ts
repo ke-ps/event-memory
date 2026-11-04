@@ -7,9 +7,5 @@ import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideHttpClient(),
-    provideRouter(routes),
-    provideZoneChangeDetection(),
-  ],
+  providers: [provideHttpClient(), provideRouter(routes), provideZoneChangeDetection()],
 }).catch((error: unknown) => console.error(error));
