@@ -200,6 +200,12 @@ refactor(events): separar lógica de negocio
 chore(project): configurar entorno
 ```
 
+Do not add AI attribution to commits, issues or Pull Requests: no `Co-Authored-By` trailers for AI tools and no "Generated with ..." footers.
+
+### Working from multiple computers
+
+The project is developed from more than one computer. When the user ends a session, follow the `fin-sesion` skill so all work is pushed to GitHub. When the user starts a session, follow the `inicio-sesion` skill to resume from the last saved point. AI memory is local to each computer, so durable project rules belong in this repository.
+
 ---
 
 ## 13. Communication
