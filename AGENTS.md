@@ -2,13 +2,18 @@
 
 ## 1. Project Context
 
-Before modifying the codebase, read:
+Before modifying the codebase, read `PROJECT_CONTEXT.md` (architecture and technical decisions).
 
-* `README.md`
-* `PLAN.md`
-* `PROJECT_CONTEXT.md`
+Read the other documents when the task needs them:
 
-These files define the project's scope, roadmap, architecture and development conventions.
+| Document | Read when |
+| --- | --- |
+| `PLAN.md` | Starting a roadmap task, or the task involves product scope or behavior. |
+| `docs/git-workflow.md` | Creating branches, commits, Pull Requests or releases. |
+| `docs/local-development.md` | Setting up, running or testing the applications. |
+| `README.md` | A general overview of the project is needed. |
+
+If a product decision is missing from `PLAN.md`, ask instead of assuming.
 
 ---
 
@@ -179,6 +184,8 @@ Critical business rules should have tests.
 ---
 
 ## 12. Git
+
+Follow the branch, Pull Request and release workflow in `docs/git-workflow.md`.
 
 Do not create commits automatically unless explicitly requested.
 
