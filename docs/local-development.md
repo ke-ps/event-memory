@@ -4,7 +4,7 @@
 
 - Node.js 20.19.x, 22.12.x o 24.x.
 - Python 3.10+.
-- Docker Desktop (para PostgreSQL).
+- PostgreSQL mediante Docker Desktop o instalado localmente.
 
 ## PostgreSQL
 
@@ -24,6 +24,38 @@ docker compose up -d db
 ```
 
 La configuración del contenedor está en `docker-compose.yml`. Usa credenciales solo para desarrollo local; no las reutilices en producción. El health check de la API no requiere que PostgreSQL esté en marcha.
+
+### Alternativa: PostgreSQL instalado en Windows
+
+Si usas una instalación local de PostgreSQL en lugar de Docker, crea el usuario y la base de datos que espera `backend/.env`. En pgAdmin, conéctate con el superusuario `postgres` y:
+
+1. En **Login/Group Roles**, crea el rol `event_memory` con la contraseña de `POSTGRES_PASSWORD` y activa **Can login?**. No le concedas permisos de superusuario.
+2. En **Databases**, crea la base de datos `event_memory` con `event_memory` como propietario.
+
+Equivalente en `psql` como `postgres`:
+
+```sql
+CREATE ROLE event_memory WITH LOGIN PASSWORD 'contraseña-de-POSTGRES_PASSWORD';
+CREATE DATABASE event_memory OWNER event_memory;
+```
+
+En `backend/.env` la contraseña va sin comillas. Evita caracteres no ASCII (como `ñ` o tildes), porque la consola de Windows puede codificarlos de forma distinta. Para comprobar la conexión, ejecuta `python -m alembic current` desde `backend` con el entorno virtual activado.
+
+## Migraciones de base de datos
+
+Con PostgreSQL en marcha y el entorno virtual del backend activado, aplica las migraciones desde la carpeta `backend`:
+
+```cmd
+python -m alembic upgrade head
+```
+
+Para generar una migración después de cambiar los modelos, desde `backend` ejecuta:
+
+```cmd
+python -m alembic revision --autogenerate -m "descripcion-del-cambio"
+```
+
+Revisa siempre el archivo generado antes de aplicarlo. No edites manualmente la estructura de una base de datos compartida o de producción.
 
 ## Backend
 

@@ -179,7 +179,19 @@ PostgreSQL will be the primary relational database.
 
 SQLAlchemy will be used as the ORM/database abstraction layer.
 
-Database schema changes must be managed through migrations.
+Database schema changes are managed through Alembic migrations.
+
+### Initial event model
+
+The `events` table stores the initial wedding event data:
+
+* UUID identifier and Firebase UID of the owner.
+* Event type, initially `wedding`.
+* Names of the two partners.
+* Optional event date, location, and main photograph storage path.
+* Active status and creation/update timestamps.
+
+The main photograph field stores a Supabase Storage object path, not the image itself. The event gallery and its guest associations will use separate records in the photo-gallery phase. Firebase remains an external identity provider, so the owner UID is not a PostgreSQL foreign key.
 
 ---
 
@@ -328,4 +340,4 @@ Until CI is configured, the PR author must record the manual validation performe
 
 ## 13. Current Status
 
-The initial technical foundation is in place: Angular frontend, FastAPI backend, local PostgreSQL configuration, and a backend health check. Firebase registration, sign-in and sign-out are implemented, and the backend verifies Firebase identity tokens. The frontend protects `/dashboard` by waiting for Firebase to restore the initial authentication state and redirects unauthenticated users to `/`. Manual validation confirmed that unauthenticated users are redirected, authenticated users can access the dashboard and remain there after reload, and signing out blocks dashboard access. Manual registration, sign-in, sign-out, backend identity verification, and unauthenticated API rejection have also been confirmed.
+The initial technical foundation is in place: Angular frontend, FastAPI backend, local PostgreSQL configuration, and a backend health check. Firebase registration, sign-in and sign-out are implemented, and the backend verifies Firebase identity tokens. The frontend protects `/dashboard` by waiting for Firebase to restore the initial authentication state and redirects unauthenticated users to `/`. Manual validation confirmed that unauthenticated users are redirected, authenticated users can access the dashboard and remain there after reload, and signing out blocks dashboard access. The initial SQLAlchemy event model and Alembic migration are in place. Manual registration, sign-in, sign-out, backend identity verification, and unauthenticated API rejection have also been confirmed.
