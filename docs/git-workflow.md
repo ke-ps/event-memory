@@ -13,15 +13,22 @@ develop
 
 `develop` is the integration branch for ongoing development.
 
+## Issues
+
+Every task gets a GitHub Issue **before** work starts, created with the **Tarea** template (`.github/ISSUE_TEMPLATE/tarea.md`): Contexto, Qué hay que hacer, Criterios de aceptación, Fuera de alcance and Referencia al plan.
+
+* **Title:** explanatory, concise and unambiguous, in plain Spanish. No labels in the title (no `[BUG]`, no `feat:`) and no unnecessary symbols such as `@`, `:` or `;`. Example: `Crear evento desde el panel`.
+* **Labels:** always one type label (`feature`, `fix`, `refactor`, `chore`, `docs`) and one priority label (`prioridad: alta`, `prioridad: media`, `prioridad: baja`).
+
 ## Task branches
 
 Before starting a change:
 
-1. Create or select a GitHub Issue describing the goal and acceptance criteria.
+1. Create or select the GitHub Issue for the task (see above).
 2. Update the local `develop` branch from `origin/develop`.
 3. Create a short-lived branch from `develop` for that issue.
 
-Use these branch prefixes:
+Branch names use a prefix plus a short, direct description in lowercase words separated by hyphens, without spaces or special characters. Use these branch prefixes:
 
 ```text
 feature/<short-description>
@@ -54,7 +61,7 @@ git switch -c feature/short-description
 
 ## Commits
 
-Commits follow Conventional Commits and describe one logical change. Use the issue number in the commit body when useful. Do not add AI attribution (see `AGENTS.md`).
+Make one commit per logical change; avoid grouping unrelated modifications in a single commit. Commits follow Conventional Commits. Use the issue number in the commit body when useful. Do not add AI attribution (see `AGENTS.md`).
 
 ```text
 feat(auth): add couple sign-in
@@ -67,11 +74,15 @@ ci(project): configure GitHub Actions
 
 ## Pull Requests
 
-Open a Pull Request from the task branch into `develop`. Each PR should:
+Open a Pull Request from the task branch into `develop`. GitHub pre-fills the description with `.github/pull_request_template.md`.
+
+* **Title:** Conventional Commits prefix followed by a clear sentence anyone on the team can understand, avoiding unnecessary technical jargon. Example: `feat(events): la pareja puede crear su boda desde el panel`. The title becomes the squash commit on `develop`.
+* **Description:** this is where the full technical depth goes: how the problem was solved, the architecture and layers involved, decisions and discarded alternatives, dependencies added, migrations and configuration, how to test it and the validation performed. Scale the detail to the importance of the change: a major change is detailed; a minor fix needs only a concise explanation.
+
+Each PR should:
 
 * Reference the GitHub Issue (for example, `Closes #12`).
-* Summarize the change and note any setup or configuration steps.
-* State what validation was performed and include screenshots for visible UI changes when useful.
+* Include screenshots for visible UI changes.
 * Have its review feedback addressed and required automated checks passing before merge.
 
 GitHub only closes issues automatically when the PR is merged into the default branch (`main`). Issues referenced by PRs into `develop` close when the release reaches `main`, or can be closed manually after merging.
