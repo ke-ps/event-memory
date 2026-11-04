@@ -141,7 +141,7 @@ En el MVP los módulos son secciones de información que el organizador activa y
 
 * [x] Diseñar el modelo inicial de eventos.
 * [x] Revisar el modelo: datos comunes y datos propios del tipo, zona horaria, URL pública y estado borrador/publicado.
-* [ ] Respuestas de error de la API con códigos estables (base para la traducción).
+* [x] Respuestas de error de la API con códigos estables (base para la traducción).
 * [ ] Preparar el frontend para traducción (i18n de Angular, configuración regional `es-ES`).
 * [ ] Crear evento (API y formulario en el panel).
 * [ ] Consultar el evento propio.
