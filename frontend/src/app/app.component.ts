@@ -23,18 +23,16 @@ type BackendStatus = 'checking' | 'connected' | 'unavailable';
             No se pudo conectar con el backend. Comprueba que esté en marcha y vuelve a intentarlo.
           }
         </p>
-        <button
-          type="button"
-          (click)="checkBackend()"
-          [disabled]="backendStatus() === 'checking'"
-        >
+        <button type="button" (click)="checkBackend()" [disabled]="backendStatus() === 'checking'">
           {{ backendStatus() === 'checking' ? 'Comprobando…' : 'Comprobar de nuevo' }}
         </button>
       </section>
     </main>
   `,
   styles: `
-    :host { display: block; }
+    :host {
+      display: block;
+    }
     main {
       box-sizing: border-box;
       display: grid;
@@ -52,8 +50,16 @@ type BackendStatus = 'checking' | 'connected' | 'unavailable';
       border-radius: 12px;
       background: #fffdf9;
     }
-    h2 { margin: 0; color: #332a28; font-size: 1rem; }
-    .status { min-height: 1.5em; color: #665c58; line-height: 1.5; }
+    h2 {
+      margin: 0;
+      color: #332a28;
+      font-size: 1rem;
+    }
+    .status {
+      min-height: 1.5em;
+      color: #665c58;
+      line-height: 1.5;
+    }
     button {
       padding: 0.65rem 0.9rem;
       border: 0;
@@ -63,7 +69,10 @@ type BackendStatus = 'checking' | 'connected' | 'unavailable';
       cursor: pointer;
       font: inherit;
     }
-    button:disabled { cursor: wait; opacity: 0.65; }
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

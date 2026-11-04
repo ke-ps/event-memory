@@ -33,9 +33,11 @@ type AuthMode = 'sign-in' | 'register';
       } @else {
         <h1 id="auth-title">{{ mode() === 'sign-in' ? 'Inicia sesión' : 'Crea tu cuenta' }}</h1>
         <p class="intro">
-          {{ mode() === 'sign-in'
-            ? 'Accede para empezar a preparar vuestro espacio.'
-            : 'Regístrate para empezar a preparar vuestro espacio.' }}
+          {{
+            mode() === 'sign-in'
+              ? 'Accede para empezar a preparar vuestro espacio.'
+              : 'Regístrate para empezar a preparar vuestro espacio.'
+          }}
         </p>
 
         @if (!authService.isConfigured) {
@@ -59,7 +61,11 @@ type AuthMode = 'sign-in' | 'register';
             formControlName="password"
             [attr.autocomplete]="mode() === 'sign-in' ? 'current-password' : 'new-password'"
           />
-          @if (mode() === 'register' && form.controls.password.touched && form.controls.password.invalid) {
+          @if (
+            mode() === 'register' &&
+            form.controls.password.touched &&
+            form.controls.password.invalid
+          ) {
             <p class="field-error">La contraseña debe tener al menos 6 caracteres.</p>
           }
 
@@ -73,13 +79,19 @@ type AuthMode = 'sign-in' | 'register';
         </form>
 
         <button class="link-button" type="button" (click)="toggleMode()">
-          {{ mode() === 'sign-in' ? '¿Aún no tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión' }}
+          {{
+            mode() === 'sign-in'
+              ? '¿Aún no tienes cuenta? Regístrate'
+              : '¿Ya tienes cuenta? Inicia sesión'
+          }}
         </button>
       }
     </section>
   `,
   styles: `
-    :host { display: block; }
+    :host {
+      display: block;
+    }
     .auth-card {
       box-sizing: border-box;
       max-width: 480px;
@@ -89,19 +101,85 @@ type AuthMode = 'sign-in' | 'register';
       border-radius: 14px;
       background: #fffdf9;
     }
-    .eyebrow { color: #8b5e52; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
-    h1 { margin: 0.5rem 0 0.75rem; color: #332a28; font-family: Georgia, serif; font-size: 2.25rem; font-weight: 400; }
-    .intro, .hint { color: #665c58; line-height: 1.6; }
-    form { display: grid; gap: 0.65rem; margin-top: 1.5rem; }
-    label { margin-top: 0.5rem; color: #332a28; font-weight: 600; }
-    input { box-sizing: border-box; width: 100%; padding: 0.75rem; border: 1px solid #b9ada5; border-radius: 6px; font: inherit; }
-    button { padding: 0.75rem 1rem; border: 0; border-radius: 6px; background: #8b5e52; color: white; cursor: pointer; font: inherit; }
-    button:disabled { cursor: wait; opacity: 0.6; }
-    .link-button { margin-top: 1rem; padding: 0; background: transparent; color: #70473d; text-decoration: underline; }
-    .field-error { margin: 0; color: #a12d2d; font-size: 0.9rem; }
-    .notice { padding: 0.75rem; border-radius: 6px; background: #f5ead5; color: #59451f; line-height: 1.5; }
-    .success { color: #28613b; overflow-wrap: anywhere; }
-    @media (max-width: 520px) { .auth-card { margin: 1rem 0; padding: 1.25rem; } }
+    .eyebrow {
+      color: #8b5e52;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0.5rem 0 0.75rem;
+      color: #332a28;
+      font-family: Georgia, serif;
+      font-size: 2.25rem;
+      font-weight: 400;
+    }
+    .intro,
+    .hint {
+      color: #665c58;
+      line-height: 1.6;
+    }
+    form {
+      display: grid;
+      gap: 0.65rem;
+      margin-top: 1.5rem;
+    }
+    label {
+      margin-top: 0.5rem;
+      color: #332a28;
+      font-weight: 600;
+    }
+    input {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #b9ada5;
+      border-radius: 6px;
+      font: inherit;
+    }
+    button {
+      padding: 0.75rem 1rem;
+      border: 0;
+      border-radius: 6px;
+      background: #8b5e52;
+      color: white;
+      cursor: pointer;
+      font: inherit;
+    }
+    button:disabled {
+      cursor: wait;
+      opacity: 0.6;
+    }
+    .link-button {
+      margin-top: 1rem;
+      padding: 0;
+      background: transparent;
+      color: #70473d;
+      text-decoration: underline;
+    }
+    .field-error {
+      margin: 0;
+      color: #a12d2d;
+      font-size: 0.9rem;
+    }
+    .notice {
+      padding: 0.75rem;
+      border-radius: 6px;
+      background: #f5ead5;
+      color: #59451f;
+      line-height: 1.5;
+    }
+    .success {
+      color: #28613b;
+      overflow-wrap: anywhere;
+    }
+    @media (max-width: 520px) {
+      .auth-card {
+        margin: 1rem 0;
+        padding: 1.25rem;
+      }
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

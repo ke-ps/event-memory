@@ -112,3 +112,17 @@ npm start
 ```
 
 Abre `http://localhost:4200`. La configuración de desarrollo permite que el frontend se comunique con la API local.
+
+### Tests y calidad del frontend
+
+Desde `frontend`:
+
+```bash
+npm test                  # tests unitarios con Vitest (modo watch)
+npm test -- --watch=false # ejecutar los tests una sola vez
+npm run lint              # ESLint (angular-eslint)
+npm run format            # formatear el código con Prettier
+npm run format:check      # comprobar el formato sin modificar archivos
+```
+
+Los tests se ejecutan en Node.js con jsdom, sin abrir un navegador. Los archivos de test usan el sufijo `.spec.ts` junto al código que prueban. La configuración de Prettier está en `package.json` y usa `endOfLine: auto` para aceptar tanto saltos de línea de Windows (CRLF) como de Linux (LF).
