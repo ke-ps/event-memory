@@ -69,3 +69,22 @@ def test_wrong_method_returns_method_not_allowed_code() -> None:
 
     assert response.status_code == 405
     assert response.json()["code"] == "method_not_allowed"
+
+
+def test_app_error_can_carry_field_errors() -> None:
+    app = FastAPI()
+    register_exception_handlers(app)
+    errors = [{"field": "details.name", "code": "missing"}]
+
+    @app.get("/invalid")
+    def raise_invalid() -> None:
+        raise AppError(422, "validation_error", "Datos no válidos.", errors=errors)
+
+    response = TestClient(app).get("/invalid")
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "code": "validation_error",
+        "message": "Datos no válidos.",
+        "errors": errors,
+    }
