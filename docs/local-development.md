@@ -91,7 +91,26 @@ python -m ruff check .        # lint
 python -m ruff format .       # formatear el código
 ```
 
-Los tests no necesitan PostgreSQL ni Firebase: las dependencias externas se sustituyen en cada test. La configuración de pytest y Ruff está en `backend/pyproject.toml`. Los archivos de `migrations/versions` se excluyen del lint porque son migraciones generadas que no deben modificarse una vez aplicadas.
+Los tests no necesitan Firebase (se sustituye en cada test), pero sí una base de datos PostgreSQL de tests (ver la siguiente subsección). La configuración de pytest y Ruff está en `backend/pyproject.toml`. Los archivos de `migrations/versions` se excluyen del lint porque son migraciones generadas que no deben modificarse una vez aplicadas.
+
+### Base de datos de tests
+
+Los tests del backend se ejecutan contra una base de datos PostgreSQL propia, `event_memory_test` (el nombre de `POSTGRES_DB` con el sufijo `_test`). Créala una sola vez, propiedad del usuario `event_memory`, desde pgAdmin o con:
+
+```sql
+CREATE DATABASE event_memory_test OWNER event_memory;
+```
+
+Las migraciones se aplican solas al ejecutar los tests y cada test se revierte al terminar. En CI la base de datos se crea automáticamente.
+
+### Probar el backend con el dashboard
+
+Para usar el dashboard contra el backend local, arranca el backend con `GOOGLE_APPLICATION_CREDENTIALS` apuntando al JSON de la cuenta de servicio de Firebase (fuera del repositorio), por ejemplo en PowerShell:
+
+```powershell
+$env:GOOGLE_APPLICATION_CREDENTIALS = "C:\ruta\fuera\del\repositorio\firebase-admin.json"
+uvicorn app.main:app --reload
+```
 
 ## Frontend
 

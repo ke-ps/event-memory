@@ -43,12 +43,14 @@ class AppError(Exception):
         code: str,
         message: str,
         headers: Mapping[str, str] | None = None,
+        errors: list[dict[str, str]] | None = None,
     ) -> None:
         super().__init__(message)
         self.status_code = status_code
         self.code = code
         self.message = message
         self.headers = dict(headers) if headers else None
+        self.errors = errors
 
 
 def error_body(code: str, message: str) -> dict[str, Any]:
@@ -64,9 +66,12 @@ def _field_name(location: Sequence[str | int]) -> str:
 
 async def _handle_app_error(_: Request, exc: Exception) -> JSONResponse:
     assert isinstance(exc, AppError)
+    content = error_body(exc.code, exc.message)
+    if exc.errors is not None:
+        content["errors"] = exc.errors
     return JSONResponse(
         status_code=exc.status_code,
-        content=error_body(exc.code, exc.message),
+        content=content,
         headers=exc.headers,
     )
 

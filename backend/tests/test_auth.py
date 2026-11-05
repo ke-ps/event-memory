@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api.routes import auth as auth_routes
+from app.api import dependencies as auth_dependencies
 from app.main import app
 from app.services.auth import (
     FirebaseAuthenticationUnavailableError,
@@ -32,7 +32,7 @@ def test_me_with_valid_token_returns_identity(monkeypatch: pytest.MonkeyPatch) -
         assert token == "valid-token"
         return {"uid": "user-123", "email": "pareja@example.com"}
 
-    monkeypatch.setattr(auth_routes, "verify_identity_token", fake_verify)
+    monkeypatch.setattr(auth_dependencies, "verify_identity_token", fake_verify)
 
     response = client.get(ME_URL, headers={"Authorization": "Bearer valid-token"})
 
@@ -44,7 +44,7 @@ def test_me_with_invalid_token_returns_401(monkeypatch: pytest.MonkeyPatch) -> N
     def fake_verify(token: str) -> dict[str, str | None]:
         raise InvalidIdentityTokenError
 
-    monkeypatch.setattr(auth_routes, "verify_identity_token", fake_verify)
+    monkeypatch.setattr(auth_dependencies, "verify_identity_token", fake_verify)
 
     response = client.get(ME_URL, headers={"Authorization": "Bearer expired-token"})
 
@@ -57,7 +57,7 @@ def test_me_when_firebase_unavailable_returns_503(monkeypatch: pytest.MonkeyPatc
     def fake_verify(token: str) -> dict[str, str | None]:
         raise FirebaseAuthenticationUnavailableError
 
-    monkeypatch.setattr(auth_routes, "verify_identity_token", fake_verify)
+    monkeypatch.setattr(auth_dependencies, "verify_identity_token", fake_verify)
 
     response = client.get(ME_URL, headers={"Authorization": "Bearer any-token"})
 

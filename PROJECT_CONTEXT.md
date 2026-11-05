@@ -86,7 +86,7 @@ Router → Service → Repository → Database
 * Dependency injection.
 * HTTP-level validation and status codes.
 
-Routers do not contain business logic.
+Routers do not contain business logic. Example: `app/api/routes/events.py` only depends on `get_db` and `get_current_user` (from `app/api/dependencies.py`, which verifies the Firebase token and returns the authenticated `CurrentUser`), calls the service and returns the response schema.
 
 ### Service
 
@@ -98,6 +98,10 @@ Routers do not contain business logic.
 * Database access, queries and persistence operations.
 
 Repositories do not contain business rules. The repository layer and request/response schemas are introduced with the first CRUD resource (events).
+
+### Testing
+
+Backend tests run against a real PostgreSQL test database (`<POSTGRES_DB>_test`, e.g. `event_memory_test`), migrated to `head` once per session. Each test runs inside a transaction that is rolled back at the end, so tests do not leave data behind. Shared fixtures live in `backend/tests/conftest.py`: `db_session` (the per-test session), `client` (a `TestClient` with `get_db` overridden to that session) and `as_user(uid, email)` (overrides `get_current_user` to authenticate as a given user without Firebase). DB-backed tests must use the `db_session` / `client` fixtures, because the app's own engine (`app.db.session`) still targets the development database.
 
 ---
 
@@ -150,7 +154,7 @@ Agreed decisions that apply to new code.
 * **One event per account:** enforced in the service layer, not with a database constraint, so it can be relaxed later.
 * **Event status:** an event is `draft` or `published`; there is no activation or deactivation. Deleting an event is permanent (no trash in the MVP).
 * **Type-specific data:** stored in the `details` JSONB column and validated per `event_type` with Pydantic, so a new event type needs a schema but no migration.
-* **API errors:** every error response is `{"code": "...", "message": "..."}`. `code` is the stable, machine-readable contract the frontend translates; `message` is a Spanish fallback that may change. Validation errors (422, `validation_error`) add `errors: [{"field": "...", "code": "..."}]` with Pydantic's error types. Services and routers raise `AppError(status_code, code, message)` from `app/core/errors.py`; the handlers registered in `main.py` also convert validation errors and generic HTTP errors (`not_found`, `method_not_allowed`…). Current codes: `missing_token`, `invalid_token` (401), `auth_unavailable` (503), `validation_error` (422). New codes use `snake_case` and are added to this list.
+* **API errors:** every error response is `{"code": "...", "message": "..."}`. `code` is the stable, machine-readable contract the frontend translates; `message` is a Spanish fallback that may change. Validation errors (422, `validation_error`) add `errors: [{"field": "...", "code": "..."}]` with Pydantic's error types. Services and routers raise `AppError(status_code, code, message)` from `app/core/errors.py`; the handlers registered in `main.py` also convert validation errors and generic HTTP errors (`not_found`, `method_not_allowed`…). Current codes: `missing_token`, `invalid_token` (401), `auth_unavailable` (503), `validation_error` (422), `event_already_exists` (409), `unsupported_event_type` (422), `event_not_found` (404), `slug_conflict` (409). New codes use `snake_case` and are added to this list.
 * **Internationalization:** the UI is in Spanish and uses Angular's built-in i18n (`@angular/localize`); no third-party translation library. The source locale is `es` (`angular.json` → `i18n.sourceLocale`), which sets `LOCALE_ID` and the Spanish date and number formats. Every fixed UI text is marked for translation with a stable custom ID in the form `area.element` (for example `auth.signIn.title`, `common.loading`): `i18n="@@id"` in templates and `` $localize`:@@id:text` `` in TypeScript. Texts that depend on a condition use `@if` blocks with one marked element per text, because text inside an expression cannot be extracted. The brand name «Event Memory» and user content are not marked. `npm run extract-i18n` writes `frontend/src/locale/messages.xlf`, which is versioned and is the source for future translations.
 * **Time zones:** event times are stored with the event's time zone and displayed in that zone.
 

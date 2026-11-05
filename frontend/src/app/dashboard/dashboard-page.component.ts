@@ -1,12 +1,17 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { apiErrorMessage } from '../core/api-error-messages';
+import { EventApiService } from '../events/event-api.service';
+import { EventCreateFormComponent } from '../events/event-create-form.component';
+import { EventSummaryComponent } from '../events/event-summary.component';
+import { EventRead } from '../events/event.models';
 import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, EventCreateFormComponent, EventSummaryComponent],
   template: `
     <main class="dashboard" aria-labelledby="dashboard-title">
       <p class="eyebrow">Event Memory</p>
@@ -18,6 +23,25 @@ import { AuthService } from '../services/auth.service';
         Desde aquí podrás gestionar tu evento. Esta sección se irá construyendo en los siguientes
         pasos.
       </p>
+      @switch (state()) {
+        @case ('loading') {
+          <p role="status" i18n="@@events.dashboard.loading">Cargando tu boda…</p>
+        }
+        @case ('empty') {
+          <app-event-create-form (created)="onCreated($event)" />
+        }
+        @case ('ready') {
+          @if (event(); as currentEvent) {
+            <app-event-summary [event]="currentEvent" />
+          }
+        }
+        @case ('error') {
+          <p class="error" role="alert">{{ errorMessage() }}</p>
+          <button class="retry" type="button" (click)="loadEvent()" i18n="@@events.dashboard.retry">
+            Reintentar
+          </button>
+        }
+      }
       <a routerLink="/" i18n="@@dashboard.backToAccount">Volver a mi cuenta</a>
     </main>
   `,
@@ -51,6 +75,18 @@ import { AuthService } from '../services/auth.service';
     a {
       color: #70473d;
     }
+    .error {
+      color: #a12d2d;
+    }
+    .retry {
+      padding: 0.75rem 1rem;
+      border: 0;
+      border-radius: 6px;
+      background: #8b5e52;
+      color: white;
+      cursor: pointer;
+      font: inherit;
+    }
     @media (max-width: 520px) {
       .dashboard {
         margin: 1rem 0;
@@ -60,6 +96,31 @@ import { AuthService } from '../services/auth.service';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardPageComponent {
+export class DashboardPageComponent implements OnInit {
+  private readonly eventApi = inject(EventApiService);
   readonly authService = inject(AuthService);
+  readonly state = signal<'loading' | 'empty' | 'ready' | 'error'>('loading');
+  readonly event = signal<EventRead | null>(null);
+  readonly errorMessage = signal('');
+
+  ngOnInit(): void {
+    void this.loadEvent();
+  }
+
+  async loadEvent(): Promise<void> {
+    this.state.set('loading');
+    try {
+      const event = await this.eventApi.getMine();
+      this.event.set(event);
+      this.state.set(event ? 'ready' : 'empty');
+    } catch (error) {
+      this.errorMessage.set(apiErrorMessage(error));
+      this.state.set('error');
+    }
+  }
+
+  onCreated(event: EventRead): void {
+    this.event.set(event);
+    this.state.set('ready');
+  }
 }
