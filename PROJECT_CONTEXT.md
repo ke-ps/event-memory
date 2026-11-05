@@ -101,7 +101,7 @@ Repositories do not contain business rules. The repository layer and request/res
 
 ### Testing
 
-Backend tests run against a real PostgreSQL test database (`<POSTGRES_DB>_test`, e.g. `event_memory_test`), migrated to `head` once per session. Each test runs inside a transaction that is rolled back at the end, so tests do not leave data behind. Shared fixtures live in `backend/tests/conftest.py`: `db_session` (the per-test session), `client` (a `TestClient` with `get_db` overridden to that session) and `as_user(uid, email)` (overrides `get_current_user` to authenticate as a given user without Firebase).
+Backend tests run against a real PostgreSQL test database (`<POSTGRES_DB>_test`, e.g. `event_memory_test`), migrated to `head` once per session. Each test runs inside a transaction that is rolled back at the end, so tests do not leave data behind. Shared fixtures live in `backend/tests/conftest.py`: `db_session` (the per-test session), `client` (a `TestClient` with `get_db` overridden to that session) and `as_user(uid, email)` (overrides `get_current_user` to authenticate as a given user without Firebase). DB-backed tests must use the `db_session` / `client` fixtures, because the app's own engine (`app.db.session`) still targets the development database.
 
 ---
 

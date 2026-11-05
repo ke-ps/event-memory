@@ -19,5 +19,4 @@ def test_slugify(text, expected):
 
 def test_slugify_respects_max_length_without_trailing_hyphen():
     result = slugify("a" * 79 + " b")
-    assert len(result) <= 80
-    assert not result.endswith("-")
+    assert result == "a" * 79

@@ -342,56 +342,56 @@
         <source>Crea vuestra boda</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">24,25</context>
+          <context context-type="linenumber">31,32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.create.partnerOne.label" datatype="html">
         <source>Nombre de la primera persona</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">27,29</context>
+          <context context-type="linenumber">34,36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.create.partnerTwo.label" datatype="html">
         <source>Nombre de la segunda persona</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">38,40</context>
+          <context context-type="linenumber">42,44</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.create.date.label" datatype="html">
         <source>Fecha de la boda (opcional)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">49,51</context>
+          <context context-type="linenumber">50,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.create.saving" datatype="html">
         <source>Creando…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">62,63</context>
+          <context context-type="linenumber">63,64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.create.submit" datatype="html">
         <source>Crear boda</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">64,66</context>
+          <context context-type="linenumber">65,67</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.create.name.tooLong" datatype="html">
         <source>El nombre es demasiado largo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">135</context>
+          <context context-type="linenumber">153</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.create.name.required" datatype="html">
         <source>Escribe un nombre.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">137</context>
+          <context context-type="linenumber">155</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.summary.dateTbd" datatype="html">

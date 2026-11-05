@@ -21,7 +21,6 @@ TEST_DATABASE_NAME = f"{settings.postgres_db}_test"
 
 @pytest.fixture(scope="session")
 def migrated_engine() -> Generator[Engine, None, None]:
-    assert TEST_DATABASE_NAME.endswith("_test")
     test_engine = create_engine(
         URL.create(
             drivername="postgresql+psycopg",
@@ -33,18 +32,19 @@ def migrated_engine() -> Generator[Engine, None, None]:
         )
     )
     try:
-        with test_engine.connect() as connection:
-            config = Config(str(BACKEND_DIR / "alembic.ini"))
-            config.set_main_option("script_location", str(BACKEND_DIR / "migrations"))
-            config.attributes["connection"] = connection
-            command.upgrade(config, "head")
-            connection.commit()
+        connection = test_engine.connect()
     except OperationalError:
         pytest.fail(
             f"Test database '{TEST_DATABASE_NAME}' is not reachable. Create it once "
             "(see docs/local-development.md, 'Base de datos de tests').",
             pytrace=False,
         )
+    with connection:
+        config = Config(str(BACKEND_DIR / "alembic.ini"))
+        config.set_main_option("script_location", str(BACKEND_DIR / "migrations"))
+        config.attributes["connection"] = connection
+        command.upgrade(config, "head")
+        connection.commit()
     yield test_engine
     test_engine.dispose()
 

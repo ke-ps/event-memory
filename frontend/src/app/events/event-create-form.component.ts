@@ -1,3 +1,4 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
 import {
   AbstractControl,
@@ -15,6 +16,12 @@ function notBlank(control: AbstractControl<string>): ValidationErrors | null {
   return control.value.length > 0 && control.value.trim().length === 0 ? { blank: true } : null;
 }
 
+const API_FIELDS = {
+  partnerOneName: 'details.partner_one_name',
+  partnerTwoName: 'details.partner_two_name',
+  eventDate: 'event_date',
+} as const;
+
 @Component({
   selector: 'app-event-create-form',
   standalone: true,
@@ -27,10 +34,7 @@ function notBlank(control: AbstractControl<string>): ValidationErrors | null {
           >Nombre de la primera persona</label
         >
         <input id="partner-one" type="text" formControlName="partnerOneName" />
-        @if (nameError('partnerOneName'); as message) {
-          <p class="field-error" id="partner-one-error">{{ message }}</p>
-        }
-        @if (apiErrors()['details.partner_one_name']; as message) {
+        @if (fieldError('partnerOneName'); as message) {
           <p class="field-error" id="partner-one-error">{{ message }}</p>
         }
 
@@ -38,10 +42,7 @@ function notBlank(control: AbstractControl<string>): ValidationErrors | null {
           >Nombre de la segunda persona</label
         >
         <input id="partner-two" type="text" formControlName="partnerTwoName" />
-        @if (nameError('partnerTwoName'); as message) {
-          <p class="field-error" id="partner-two-error">{{ message }}</p>
-        }
-        @if (apiErrors()['details.partner_two_name']; as message) {
+        @if (fieldError('partnerTwoName'); as message) {
           <p class="field-error" id="partner-two-error">{{ message }}</p>
         }
 
@@ -128,7 +129,24 @@ export class EventCreateFormComponent {
     eventDate: [''],
   });
 
-  nameError(controlName: 'partnerOneName' | 'partnerTwoName'): string {
+  constructor() {
+    for (const [controlName, apiField] of Object.entries(API_FIELDS)) {
+      this.form
+        .get(controlName)
+        ?.valueChanges.pipe(takeUntilDestroyed())
+        .subscribe(() => {
+          this.apiErrors.update((errors) =>
+            Object.fromEntries(Object.entries(errors).filter(([key]) => key !== apiField)),
+          );
+        });
+    }
+  }
+
+  fieldError(controlName: 'partnerOneName' | 'partnerTwoName'): string {
+    return this.nameError(controlName) || this.apiErrors()[API_FIELDS[controlName]] || '';
+  }
+
+  private nameError(controlName: 'partnerOneName' | 'partnerTwoName'): string {
     const control = this.form.controls[controlName];
     if (!control.touched || control.valid) return '';
     if (control.hasError('maxlength')) {
@@ -158,7 +176,8 @@ export class EventCreateFormComponent {
     } catch (error) {
       const fieldErrors = apiFieldErrors(error);
       this.apiErrors.set(fieldErrors);
-      if (Object.keys(fieldErrors).length === 0) {
+      const shown = Object.values(API_FIELDS).some((field) => field in fieldErrors);
+      if (!shown) {
         this.errorMessage.set(apiErrorMessage(error));
       }
     } finally {

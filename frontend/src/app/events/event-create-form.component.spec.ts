@@ -95,4 +95,81 @@ describe('EventCreateFormComponent', () => {
     expect(message?.textContent).toContain('Este campo es obligatorio.');
     expect(element.querySelector('#partner-two-error')).toBeNull();
   });
+
+  it('clears the API field error when the user edits that field', async () => {
+    const error = new HttpErrorResponse({
+      status: 422,
+      error: {
+        code: 'validation_error',
+        errors: [{ field: 'details.partner_one_name', code: 'string_too_short' }],
+      },
+    });
+    const { fixture, element, component } = setup(vi.fn(() => Promise.reject(error)));
+
+    fill(element, 'partner-one', 'Ana');
+    fill(element, 'partner-two', 'Luis');
+    fixture.detectChanges();
+    await component.submit();
+    fixture.detectChanges();
+    expect(element.querySelector('#partner-one-error')).not.toBeNull();
+
+    fill(element, 'partner-one', 'Anita');
+    fixture.detectChanges();
+
+    expect(element.querySelector('#partner-one-error')).toBeNull();
+  });
+
+  it('never renders two elements with the same error id', async () => {
+    const error = new HttpErrorResponse({
+      status: 422,
+      error: {
+        code: 'validation_error',
+        errors: [{ field: 'details.partner_one_name', code: 'string_too_short' }],
+      },
+    });
+    const { fixture, element, component } = setup(vi.fn(() => Promise.reject(error)));
+
+    fill(element, 'partner-one', 'Ana');
+    fill(element, 'partner-two', 'Luis');
+    fixture.detectChanges();
+    await component.submit();
+    component.form.controls.partnerOneName.setValue('');
+    component.form.controls.partnerOneName.markAsTouched();
+    fixture.detectChanges();
+
+    expect(element.querySelectorAll('#partner-one-error').length).toBeLessThanOrEqual(1);
+  });
+
+  it('shows the general message when the API reports an unknown field', async () => {
+    const error = new HttpErrorResponse({
+      status: 422,
+      error: {
+        code: 'validation_error',
+        errors: [{ field: 'details.foo', code: 'missing' }],
+      },
+    });
+    const { fixture, element, component } = setup(vi.fn(() => Promise.reject(error)));
+
+    fill(element, 'partner-one', 'Ana');
+    fill(element, 'partner-two', 'Luis');
+    fixture.detectChanges();
+    await component.submit();
+    fixture.detectChanges();
+
+    expect(element.querySelector('[role="alert"]')?.textContent).toContain(
+      'Revisa los datos del formulario.',
+    );
+  });
+
+  it('sends the chosen date as event_date', async () => {
+    const { fixture, element, create, component } = setup();
+
+    fill(element, 'partner-one', 'Ana');
+    fill(element, 'partner-two', 'Luis');
+    fill(element, 'event-date', '2027-06-12');
+    fixture.detectChanges();
+    await component.submit();
+
+    expect(create).toHaveBeenCalledWith(expect.objectContaining({ event_date: '2027-06-12' }));
+  });
 });
