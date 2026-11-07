@@ -1,20 +1,10 @@
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChangeDetectionStrategy, Component, inject, output, signal } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { apiErrorMessage, apiFieldErrors } from '../core/api-error-messages';
 import { EventApiService } from './event-api.service';
+import { clearApiErrorOnEdit, hasVisibleFieldError, notBlank } from './event-form-errors';
 import { EventRead } from './event.models';
-
-function notBlank(control: AbstractControl<string>): ValidationErrors | null {
-  return control.value.length > 0 && control.value.trim().length === 0 ? { blank: true } : null;
-}
 
 const API_FIELDS = {
   partnerOneName: 'details.partner_one_name',
@@ -130,16 +120,7 @@ export class EventCreateFormComponent {
   });
 
   constructor() {
-    for (const [controlName, apiField] of Object.entries(API_FIELDS)) {
-      this.form
-        .get(controlName)
-        ?.valueChanges.pipe(takeUntilDestroyed())
-        .subscribe(() => {
-          this.apiErrors.update((errors) =>
-            Object.fromEntries(Object.entries(errors).filter(([key]) => key !== apiField)),
-          );
-        });
-    }
+    clearApiErrorOnEdit(this.form, API_FIELDS, this.apiErrors);
   }
 
   fieldError(controlName: 'partnerOneName' | 'partnerTwoName'): string {
@@ -176,7 +157,7 @@ export class EventCreateFormComponent {
     } catch (error) {
       const fieldErrors = apiFieldErrors(error);
       this.apiErrors.set(fieldErrors);
-      const shown = Object.values(API_FIELDS).some((field) => field in fieldErrors);
+      const shown = hasVisibleFieldError(fieldErrors, API_FIELDS);
       if (!shown) {
         this.errorMessage.set(apiErrorMessage(error));
       }

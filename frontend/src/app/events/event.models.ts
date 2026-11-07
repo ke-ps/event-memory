@@ -31,3 +31,10 @@ export interface EventCreateRequest {
   details: WeddingDetails;
   event_date: string | null;
 }
+
+export interface EventUpdateRequest {
+  title: string | null;
+  details: WeddingDetails;
+  event_date: string | null;
+  start_time: string | null;
+}

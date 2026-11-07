@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
-import { EventCreateRequest, EventRead } from './event.models';
+import { EventCreateRequest, EventRead, EventUpdateRequest } from './event.models';
 
 @Injectable({ providedIn: 'root' })
 export class EventApiService {
@@ -30,6 +30,13 @@ export class EventApiService {
       }
       throw error;
     }
+  }
+
+  async update(request: EventUpdateRequest): Promise<EventRead> {
+    const headers = await this.authHeaders();
+    return firstValueFrom(
+      this.http.put<EventRead>(`${environment.apiBaseUrl}/events/me`, request, { headers }),
+    );
   }
 
   private async authHeaders(): Promise<HttpHeaders> {
