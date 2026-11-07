@@ -1,9 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 
 import { EventApiService } from '../events/event-api.service';
+import { EventEditFormComponent } from '../events/event-edit-form.component';
 import { EventCreateFormComponent } from '../events/event-create-form.component';
 import { EventRead } from '../events/event.models';
 import { AuthService } from '../services/auth.service';
@@ -30,7 +32,10 @@ async function setup(getMine: () => Promise<EventRead | null>) {
     providers: [
       provideRouter([]),
       { provide: AuthService, useValue: { currentUser: signal({ email: 'a@b.c' }) } },
-      { provide: EventApiService, useValue: { getMine: getMineMock, create: vi.fn() } },
+      {
+        provide: EventApiService,
+        useValue: { getMine: getMineMock, create: vi.fn(), update: vi.fn() },
+      },
     ],
   });
   const fixture = TestBed.createComponent(DashboardPageComponent);
@@ -87,4 +92,57 @@ describe('DashboardPageComponent', () => {
 
     expect(text(fixture)).toContain('Ana y Luis');
   });
+
+  it('shows the start time in the summary', async () => {
+    const { fixture } = await setup(() =>
+      Promise.resolve({ ...event, event_date: '2027-06-12', start_time: '18:30:00' }),
+    );
+
+    expect(text(fixture).replace(/\s+/g, ' ')).toContain('12 de junio de 2027, 18:30');
+  });
+
+  it('opens the edit form from the summary', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+    const root = fixture.nativeElement as HTMLElement;
+
+    clickEdit(fixture);
+
+    expect(root.querySelector('app-event-edit-form')).not.toBeNull();
+    expect(root.querySelector('app-event-summary')).toBeNull();
+  });
+
+  it('returns to the summary with the saved event', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+    clickEdit(fixture);
+
+    editForm(fixture).saved.emit({ ...event, title: 'Nuestra boda' });
+    fixture.detectChanges();
+
+    expect(text(fixture)).toContain('Nuestra boda');
+    expect((fixture.nativeElement as HTMLElement).querySelector('app-event-edit-form')).toBeNull();
+  });
+
+  it('returns to the summary on cancel', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+    clickEdit(fixture);
+
+    editForm(fixture).cancelled.emit();
+    fixture.detectChanges();
+
+    expect(text(fixture)).toContain('Ana y Luis');
+    expect((fixture.nativeElement as HTMLElement).querySelector('app-event-edit-form')).toBeNull();
+  });
 });
+
+function clickEdit(fixture: ComponentFixture<DashboardPageComponent>): void {
+  const button = Array.from(
+    (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button'),
+  ).find((b) => b.textContent?.trim() === 'Editar')!;
+  button.click();
+  fixture.detectChanges();
+}
+
+function editForm(fixture: ComponentFixture<DashboardPageComponent>) {
+  return fixture.debugElement.query(By.directive(EventEditFormComponent))
+    .componentInstance as EventEditFormComponent;
+}

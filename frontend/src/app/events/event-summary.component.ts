@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
 import { EventRead } from './event.models';
 
@@ -12,7 +12,7 @@ import { EventRead } from './event.models';
       <h2 id="event-title">{{ event().title }}</h2>
       <p>
         @if (event().event_date; as date) {
-          {{ date | date: 'longDate' }}
+          {{ (date | date: 'longDate') + timeSuffix() }}
         } @else {
           <ng-container i18n="@@events.summary.dateTbd">Fecha por decidir</ng-container>
         }
@@ -24,6 +24,7 @@ import { EventRead } from './event.models';
           <ng-container i18n="@@events.summary.status.draft">Borrador</ng-container>
         }
       </p>
+      <button type="button" (click)="edit.emit()" i18n="@@events.summary.edit">Editar</button>
     </section>
   `,
   styles: `
@@ -40,4 +41,9 @@ import { EventRead } from './event.models';
 })
 export class EventSummaryComponent {
   readonly event = input.required<EventRead>();
+  readonly edit = output<void>();
+  readonly timeSuffix = computed(() => {
+    const time = this.event().start_time;
+    return time ? `, ${time.slice(0, 5)}` : '';
+  });
 }
