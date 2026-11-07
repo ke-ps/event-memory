@@ -203,7 +203,7 @@ def test_update_event_only_touches_own_event(client: TestClient, as_user: AsUser
     as_user("uid-2", None)
     client.post(URL, json=payload())
 
-    assert client.put(f"{URL}/me", json=update_payload()).status_code == 200
+    assert client.put(f"{URL}/me", json=update_payload(title="Otro título")).status_code == 200
 
     as_user("uid-1", None)
     assert client.get(f"{URL}/me").json()["title"] == original["title"]
