@@ -489,28 +489,28 @@
         <source>Fecha por decidir</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
-          <context context-type="linenumber">17,19</context>
+          <context context-type="linenumber">17,18</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.summary.status.published" datatype="html">
         <source>Publicado</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
-          <context context-type="linenumber">22,24</context>
+          <context context-type="linenumber">23,25</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.summary.status.draft" datatype="html">
         <source>Borrador</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
-          <context context-type="linenumber">24,27</context>
+          <context context-type="linenumber">25,28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.summary.edit" datatype="html">
         <source>Editar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
-          <context context-type="linenumber">27,30</context>
+          <context context-type="linenumber">28,31</context>
         </context-group>
       </trans-unit>
     </body>

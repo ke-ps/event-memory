@@ -84,7 +84,7 @@ type FieldName = keyof typeof API_FIELDS;
             <ng-container i18n="@@events.edit.submit">Guardar</ng-container>
           }
         </button>
-        <button type="button" class="secondary" (click)="cancelled.emit()">
+        <button type="button" (click)="cancelled.emit()">
           <ng-container i18n="@@events.edit.cancel">Cancelar</ng-container>
         </button>
       </form>

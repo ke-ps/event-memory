@@ -190,6 +190,21 @@ def test_update_event_title_too_long_returns_422(client: TestClient, as_user: As
     assert any(error["field"] == "title" for error in response.json()["errors"])
 
 
+def test_update_event_invalid_details_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.put(
+        f"{URL}/me",
+        json=update_payload(details={"partner_one_name": "", "partner_two_name": "Luis"}),
+    )
+
+    assert response.status_code == 422
+    result = response.json()
+    assert result["code"] == "validation_error"
+    assert any(error["field"] == "details.partner_one_name" for error in result["errors"])
+
+
 def test_update_event_without_token_returns_401(client: TestClient) -> None:
     response = client.put(f"{URL}/me", json=update_payload())
 

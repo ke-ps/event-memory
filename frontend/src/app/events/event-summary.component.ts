@@ -14,7 +14,8 @@ import { EventRead } from './event.models';
         @if (event().event_date; as date) {
           {{ (date | date: 'longDate') + timeSuffix() }}
         } @else {
-          <ng-container i18n="@@events.summary.dateTbd">Fecha por decidir</ng-container>
+          <ng-container i18n="@@events.summary.dateTbd">Fecha por decidir</ng-container
+          >{{ timeSuffix() }}
         }
       </p>
       <p>

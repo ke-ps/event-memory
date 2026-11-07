@@ -101,6 +101,22 @@ describe('DashboardPageComponent', () => {
     expect(text(fixture).replace(/\s+/g, ' ')).toContain('12 de junio de 2027, 18:30');
   });
 
+  it('shows the start time even when the date is undecided', async () => {
+    const { fixture } = await setup(() => Promise.resolve({ ...event, start_time: '18:30:00' }));
+
+    expect(text(fixture).replace(/\s+/g, ' ')).toContain('Fecha por decidir, 18:30');
+  });
+
+  it('shows the date without a time suffix when there is no start time', async () => {
+    const { fixture } = await setup(() =>
+      Promise.resolve({ ...event, event_date: '2027-06-12', start_time: null }),
+    );
+    const summary = text(fixture).replace(/\s+/g, ' ');
+
+    expect(summary).toContain('12 de junio de 2027');
+    expect(summary).not.toContain('12 de junio de 2027,');
+  });
+
   it('opens the edit form from the summary', async () => {
     const { fixture } = await setup(() => Promise.resolve(event));
     const root = fixture.nativeElement as HTMLElement;
