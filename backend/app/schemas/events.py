@@ -1,8 +1,8 @@
 from datetime import date, datetime, time
-from typing import Any
+from typing import Annotated, Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, StringConstraints
 
 
 class EventCreate(BaseModel):
@@ -11,6 +11,15 @@ class EventCreate(BaseModel):
     event_type: str
     details: dict[str, Any]
     event_date: date | None = None
+
+
+class EventUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: Annotated[str, StringConstraints(strip_whitespace=True, max_length=150)] | None
+    details: dict[str, Any]
+    event_date: date | None
+    start_time: time | None
 
 
 class LocationRead(BaseModel):

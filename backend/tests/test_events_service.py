@@ -1,11 +1,14 @@
+from datetime import date, time
+
 import pytest
+from pydantic import ValidationError
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
 from app.models.event import Event
-from app.schemas.events import EventCreate
-from app.services.events import create_event, get_own_event
+from app.schemas.events import EventCreate, EventUpdate
+from app.services.events import create_event, get_own_event, update_own_event
 
 
 def wedding(one: str = "Ana", two: str = "Luis") -> EventCreate:
@@ -132,3 +135,118 @@ def test_persistent_slug_conflict_gives_up(
 
     assert exc_info.value.status_code == 409
     assert exc_info.value.code == "slug_conflict"
+
+
+def edit(**overrides: object) -> EventUpdate:
+    body: dict[str, object] = {
+        "title": "La boda de Ana y Luis",
+        "details": {"partner_one_name": "Ana", "partner_two_name": "Luis"},
+        "event_date": date(2027, 6, 12),
+        "start_time": time(18, 30),
+    }
+    body.update(overrides)
+    return EventUpdate(**body)
+
+
+def test_update_event_changes_editable_fields(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event(db_session, "uid-a", edit())
+
+    assert event.title == "La boda de Ana y Luis"
+    assert event.event_date == date(2027, 6, 12)
+    assert event.start_time == time(18, 30)
+
+
+def test_update_event_keeps_slug_status_and_timezone(db_session: Session) -> None:
+    created = create_event(db_session, "uid-a", wedding())
+    before = (created.slug, created.status, created.timezone, created.event_type)
+
+    event = update_own_event(
+        db_session,
+        "uid-a",
+        edit(details={"partner_one_name": "Eva", "partner_two_name": "Pau"}),
+    )
+
+    assert (event.slug, event.status, event.timezone, event.event_type) == before
+
+
+@pytest.mark.parametrize("title", [None, "", "   "])
+def test_update_event_with_empty_title_regenerates_it(
+    db_session: Session, title: str | None
+) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event(
+        db_session,
+        "uid-a",
+        edit(title=title, details={"partner_one_name": "Marta", "partner_two_name": "Pablo"}),
+    )
+
+    assert event.title == "Marta y Pablo"
+
+
+def test_update_event_strips_title(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event(db_session, "uid-a", edit(title="  Nuestra boda  "))
+
+    assert event.title == "Nuestra boda"
+
+
+def test_update_event_changing_names_keeps_custom_title(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event(db_session, "uid-a", edit(title="Nuestra boda"))
+
+    event = update_own_event(
+        db_session,
+        "uid-a",
+        edit(
+            title="Nuestra boda",
+            details={"partner_one_name": "Eva", "partner_two_name": "Luis"},
+        ),
+    )
+
+    assert event.title == "Nuestra boda"
+    assert event.details["partner_one_name"] == "Eva"
+
+
+def test_update_event_can_clear_date_and_time(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event(db_session, "uid-a", edit())
+
+    event = update_own_event(db_session, "uid-a", edit(event_date=None, start_time=None))
+    db_session.refresh(event)
+
+    assert event.event_date is None
+    assert event.start_time is None
+
+
+def test_update_event_without_event(db_session: Session) -> None:
+    with pytest.raises(AppError) as exc_info:
+        update_own_event(db_session, "uid-a", edit())
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.code == "event_not_found"
+
+
+def test_update_event_with_invalid_details(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    with pytest.raises(AppError) as exc_info:
+        update_own_event(
+            db_session,
+            "uid-a",
+            edit(details={"partner_one_name": "", "partner_two_name": "Luis"}),
+        )
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.code == "validation_error"
+    assert {"field": "details.partner_one_name", "code": "string_too_short"} in (
+        exc_info.value.errors or []
+    )
+
+
+def test_update_event_title_too_long_is_rejected_by_schema() -> None:
+    with pytest.raises(ValidationError):
+        edit(title="x" * 151)
