@@ -16,3 +16,8 @@ def add(session: Session, event: Event) -> Event:
     session.add(event)
     session.flush()
     return event
+
+
+def delete(session: Session, event: Event) -> None:
+    session.delete(event)
+    session.flush()

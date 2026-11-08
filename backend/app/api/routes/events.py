@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.api.dependencies import CurrentUser, get_current_user
 from app.db.session import get_db
 from app.schemas.events import EventCreate, EventRead, EventUpdate
-from app.services.events import create_event, get_own_event, update_own_event
+from app.services.events import create_event, delete_own_event, get_own_event, update_own_event
 
 router = APIRouter()
 
@@ -40,3 +40,15 @@ def update_my_event(
     session: Annotated[Session, Depends(get_db)],
 ) -> EventRead:
     return EventRead.model_validate(update_own_event(session, user.uid, data))
+
+
+@router.delete(
+    "/me",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Eliminar el evento del usuario",
+)
+def delete_my_event(
+    user: Annotated[CurrentUser, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_db)],
+) -> None:
+    delete_own_event(session, user.uid)
