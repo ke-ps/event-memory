@@ -204,6 +204,7 @@ export class EventEditFormComponent implements OnInit {
     try {
       const event = await this.eventApi.update({
         title: title.trim() || null,
+        slug: this.event().slug,
         details: {
           partner_one_name: partnerOneName.trim(),
           partner_two_name: partnerTwoName.trim(),

@@ -70,6 +70,7 @@ describe('EventEditFormComponent', () => {
 
     expect(update).toHaveBeenCalledWith({
       title: 'Nuestra boda',
+      slug: 'ana-y-luis',
       details: { partner_one_name: 'Ana María', partner_two_name: 'Luis' },
       event_date: '2027-06-12',
       start_time: '18:30',
@@ -88,6 +89,7 @@ describe('EventEditFormComponent', () => {
 
     expect(update).toHaveBeenCalledWith({
       title: null,
+      slug: 'ana-y-luis',
       details: { partner_one_name: 'Ana', partner_two_name: 'Luis' },
       event_date: null,
       start_time: null,
