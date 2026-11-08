@@ -22,6 +22,11 @@ const messages: Record<string, () => string> = {
     $localize`:@@errors.invalid_token:Tu sesión ha caducado. Vuelve a iniciar sesión.`,
   auth_unavailable: () =>
     $localize`:@@errors.auth_unavailable:El servicio de autenticación no está disponible. Inténtalo más tarde.`,
+  slug_taken: () => $localize`:@@errors.slug_taken:Esa dirección ya está en uso.`,
+  slug_locked: () =>
+    $localize`:@@errors.slug_locked:Para cambiar la dirección, despublica la boda.`,
+  event_date_required: () =>
+    $localize`:@@errors.event_date_required:Añade la fecha para poder publicar.`,
   slug_conflict: () =>
     $localize`:@@errors.slug_conflict:No se pudo generar la dirección de tu boda. Inténtalo de nuevo.`,
 };
@@ -38,6 +43,14 @@ function fieldMessage(code: string): string {
       return $localize`:@@errors.field.required:Este campo es obligatorio.`;
     case 'string_too_long':
       return $localize`:@@errors.field.tooLong:El texto es demasiado largo.`;
+    case 'slug_taken':
+      return $localize`:@@errors.field.slug_taken:Esa dirección ya está en uso.`;
+    case 'slug_locked':
+      return $localize`:@@errors.field.slug_locked:Para cambiar la dirección, despublica la boda.`;
+    case 'event_date_required':
+      return $localize`:@@errors.field.event_date_required:Una boda publicada necesita fecha.`;
+    case 'string_pattern_mismatch':
+      return $localize`:@@errors.field.slug_pattern:Usa solo minúsculas, números y guiones.`;
     default:
       return $localize`:@@errors.field.invalid:El valor no es válido.`;
   }
@@ -61,11 +74,11 @@ export function apiErrorMessage(error: unknown): string {
 
 export function apiFieldErrors(error: unknown): Record<string, string> {
   const body = errorBody(error);
-  if (body?.code !== 'validation_error' || !Array.isArray(body.errors)) {
+  if (!Array.isArray(body?.errors)) {
     return {};
   }
   const result: Record<string, string> = {};
-  for (const { field, code } of body.errors) {
+  for (const { field, code } of body.errors ?? []) {
     result[field] = fieldMessage(code);
   }
   return result;

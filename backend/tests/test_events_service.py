@@ -13,6 +13,8 @@ from app.services.events import (
     create_event,
     delete_own_event,
     get_own_event,
+    publish_own_event,
+    unpublish_own_event,
     update_own_event,
 )
 
@@ -146,6 +148,7 @@ def test_persistent_slug_conflict_gives_up(
 def edit(**overrides: object) -> EventUpdate:
     body: dict[str, object] = {
         "title": "La boda de Ana y Luis",
+        "slug": "ana-y-luis",
         "details": {"partner_one_name": "Ana", "partner_two_name": "Luis"},
         "event_date": date(2027, 6, 12),
         "start_time": time(18, 30),
@@ -258,6 +261,95 @@ def test_update_event_title_too_long_is_rejected_by_schema() -> None:
         edit(title="x" * 151)
 
 
+def test_update_event_changes_slug_in_draft(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event(db_session, "uid-a", edit(slug="boda-ana-luis"))
+
+    assert event.slug == "boda-ana-luis"
+
+
+def test_update_event_normalizes_slug() -> None:
+    assert edit(slug="  Boda-Ana  ").slug == "boda-ana"
+
+
+@pytest.mark.parametrize("slug", ["ab", "ana y luis", "-ana", "ana--luis", "ñu-ñu", "x" * 81])
+def test_update_event_slug_invalid_format_rejected(slug: str) -> None:
+    with pytest.raises(ValidationError):
+        edit(slug=slug)
+
+
+def test_update_event_slug_taken(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    create_event(db_session, "uid-b", wedding())  # slug ana-y-luis-2
+
+    with pytest.raises(AppError) as exc_info:
+        update_own_event(db_session, "uid-a", edit(slug="ana-y-luis-2"))
+
+    assert exc_info.value.status_code == 409
+    assert exc_info.value.code == "slug_taken"
+    assert exc_info.value.errors == [{"field": "slug", "code": "slug_taken"}]
+
+
+def test_update_event_slug_taken_on_commit(
+    db_session: Session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    create_event(db_session, "uid-a", wedding())
+    create_event(db_session, "uid-b", wedding())
+    monkeypatch.setattr("app.repositories.events.slug_exists", lambda session, slug: False)
+
+    with pytest.raises(AppError) as exc_info:
+        update_own_event(db_session, "uid-a", edit(slug="ana-y-luis-2"))
+
+    assert exc_info.value.status_code == 409
+    assert exc_info.value.code == "slug_taken"
+
+
+def publish(session: Session, event: Event) -> None:
+    event.status = "published"
+    session.flush()
+
+
+def test_update_published_event_with_same_slug(db_session: Session) -> None:
+    publish(db_session, create_event(db_session, "uid-a", wedding()))
+
+    event = update_own_event(db_session, "uid-a", edit(event_date=date(2027, 7, 1)))
+
+    assert event.slug == "ana-y-luis"
+    assert event.event_date == date(2027, 7, 1)
+
+
+def test_update_published_event_slug_locked(db_session: Session) -> None:
+    publish(db_session, create_event(db_session, "uid-a", wedding()))
+
+    with pytest.raises(AppError) as exc_info:
+        update_own_event(db_session, "uid-a", edit(slug="otra-url"))
+
+    assert exc_info.value.status_code == 409
+    assert exc_info.value.code == "slug_locked"
+    assert exc_info.value.errors == [{"field": "slug", "code": "slug_locked"}]
+    assert get_own_event(db_session, "uid-a").slug == "ana-y-luis"
+
+
+def test_update_published_event_cannot_clear_date(db_session: Session) -> None:
+    publish(db_session, create_event(db_session, "uid-a", wedding()))
+
+    with pytest.raises(AppError) as exc_info:
+        update_own_event(db_session, "uid-a", edit(event_date=None))
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.code == "event_date_required"
+    assert exc_info.value.errors == [{"field": "event_date", "code": "event_date_required"}]
+
+
+def test_update_published_event_can_change_date(db_session: Session) -> None:
+    publish(db_session, create_event(db_session, "uid-a", wedding()))
+
+    event = update_own_event(db_session, "uid-a", edit(event_date=date(2027, 9, 18)))
+
+    assert event.event_date == date(2027, 9, 18)
+
+
 def test_delete_event_removes_it_and_its_locations(db_session: Session) -> None:
     event = create_event(db_session, "uid-a", wedding())
     db_session.add(
@@ -303,3 +395,60 @@ def test_owner_can_create_again_after_deleting(db_session: Session) -> None:
     event = create_event(db_session, "uid-a", wedding())
 
     assert event.slug == "ana-y-luis"
+
+
+def test_publish_event_without_date(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event(db_session, "uid-a", edit(event_date=None))
+
+    with pytest.raises(AppError) as exc_info:
+        publish_own_event(db_session, "uid-a")
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.code == "event_date_required"
+    assert exc_info.value.errors == [{"field": "event_date", "code": "event_date_required"}]
+    assert get_own_event(db_session, "uid-a").status == "draft"
+
+
+def test_publish_event(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event(db_session, "uid-a", edit(event_date=date(2027, 6, 12)))
+
+    assert publish_own_event(db_session, "uid-a").status == "published"
+
+
+def test_publish_event_twice(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event(db_session, "uid-a", edit(event_date=date(2027, 6, 12)))
+    publish_own_event(db_session, "uid-a")
+
+    assert publish_own_event(db_session, "uid-a").status == "published"
+
+
+def test_unpublish_event_keeps_data(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    before = update_own_event(db_session, "uid-a", edit(event_date=date(2027, 6, 12)))
+    title, slug, details = before.title, before.slug, dict(before.details)
+    publish_own_event(db_session, "uid-a")
+
+    event = unpublish_own_event(db_session, "uid-a")
+
+    assert event.status == "draft"
+    assert event.title == title
+    assert event.slug == slug
+    assert event.details == details
+    assert event.event_date == date(2027, 6, 12)
+
+
+def test_unpublish_draft_event(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    assert unpublish_own_event(db_session, "uid-a").status == "draft"
+
+
+def test_publish_and_unpublish_without_event(db_session: Session) -> None:
+    for action in (publish_own_event, unpublish_own_event):
+        with pytest.raises(AppError) as exc_info:
+            action(db_session, "uid-x")
+        assert exc_info.value.status_code == 404
+        assert exc_info.value.code == "event_not_found"

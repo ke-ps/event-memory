@@ -45,10 +45,12 @@ El primer producto es un **MVP para bodas**. La plataforma está pensada para ad
 
 ### Página pública
 
-* Cada evento tiene una URL pública con un identificador legible, por ejemplo `/e/ana-y-luis`. Se genera a partir de los nombres, la pareja puede editarla y es única. **(propuesta)**
-* El evento empieza en **borrador** y solo es visible públicamente cuando el organizador lo **publica**. **(propuesta)**
-* La fecha del evento es obligatoria para publicar. **(propuesta)**
+* Cada evento tiene una URL pública con un identificador legible, por ejemplo `/e/ana-y-luis`. Se genera a partir de los nombres, la pareja puede editarla y es única.
+* El evento empieza en **borrador** y solo es visible públicamente cuando el organizador lo **publica**.
+* La fecha del evento es obligatoria para publicar.
+* Una boda publicada siempre tiene fecha y su URL queda fija; para cambiar la URL hay que despublicarla.
 * La página es abierta: cualquiera con el enlace puede ver la información.
+* Pendiente de decidir: si se reservan las URLs de bodas publicadas que se borran, para que otra boda no ocupe un enlace ya repartido.
 
 ### Invitados y confirmación de asistencia
 
@@ -154,8 +156,8 @@ En el MVP los módulos son secciones de información que el organizador activa y
 
 **Objetivo:** los invitados ven la página de la boda.
 
-* [ ] URL pública editable y única.
-* [ ] Publicar y despublicar el evento.
+* [x] URL pública editable y única.
+* [x] Publicar y despublicar el evento.
 * [ ] Primera plantilla de boda (diseño a partir del prompt de diseño del propietario del proyecto).
 * [ ] Información, fecha y ubicación con enlace al mapa.
 * [ ] Configurar Supabase Storage y subir la foto principal.

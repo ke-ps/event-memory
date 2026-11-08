@@ -6,6 +6,7 @@ import { provideRouter } from '@angular/router';
 
 import { EventApiService } from '../events/event-api.service';
 import { EventDeleteConfirmComponent } from '../events/event-delete-confirm.component';
+import { EventPublicationComponent } from '../events/event-publication.component';
 import { EventEditFormComponent } from '../events/event-edit-form.component';
 import { EventCreateFormComponent } from '../events/event-create-form.component';
 import { EventRead } from '../events/event.models';
@@ -35,7 +36,14 @@ async function setup(getMine: () => Promise<EventRead | null>) {
       { provide: AuthService, useValue: { currentUser: signal({ email: 'a@b.c' }) } },
       {
         provide: EventApiService,
-        useValue: { getMine: getMineMock, create: vi.fn(), update: vi.fn(), deleteMine: vi.fn() },
+        useValue: {
+          getMine: getMineMock,
+          create: vi.fn(),
+          update: vi.fn(),
+          deleteMine: vi.fn(),
+          publish: vi.fn(),
+          unpublish: vi.fn(),
+        },
       },
     ],
   });
@@ -183,6 +191,17 @@ describe('DashboardPageComponent', () => {
     const root = fixture.nativeElement as HTMLElement;
     expect(root.querySelector('app-event-create-form')).not.toBeNull();
     expect(text(fixture)).not.toContain('Ana y Luis');
+  });
+
+  it('publishing updates the summary', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+
+    fixture.debugElement
+      .query(By.directive(EventPublicationComponent))
+      .componentInstance.changed.emit({ ...event, status: 'published' });
+    fixture.detectChanges();
+
+    expect(text(fixture)).toContain('Publicada');
   });
 });
 

@@ -11,6 +11,18 @@ describe('apiErrorMessage', () => {
     expect(apiErrorMessage(error)).toBe('Ya tienes una boda creada.');
   });
 
+  it('returns the message for the publish error codes', () => {
+    expect(apiErrorMessage(httpError(409, { code: 'slug_taken', message: 'x' }))).toBe(
+      'Esa dirección ya está en uso.',
+    );
+    expect(apiErrorMessage(httpError(409, { code: 'slug_locked', message: 'x' }))).toBe(
+      'Para cambiar la dirección, despublica la boda.',
+    );
+    expect(apiErrorMessage(httpError(422, { code: 'event_date_required', message: 'x' }))).toBe(
+      'Añade la fecha para poder publicar.',
+    );
+  });
+
   it('returns the generic message for an unknown code', () => {
     const error = httpError(418, { code: 'teapot', message: 'x' });
 
@@ -49,6 +61,25 @@ describe('apiFieldErrors', () => {
       'details.partner_two_name': 'El texto es demasiado largo.',
       event_date: 'El valor no es válido.',
     });
+  });
+
+  it('maps field errors of non-validation errors', () => {
+    const error = httpError(409, {
+      code: 'slug_taken',
+      message: 'x',
+      errors: [{ field: 'slug', code: 'slug_taken' }],
+    });
+
+    expect(apiFieldErrors(error)).toEqual({ slug: 'Esa dirección ya está en uso.' });
+    expect(
+      apiFieldErrors(
+        httpError(422, {
+          code: 'validation_error',
+          message: 'x',
+          errors: [{ field: 'slug', code: 'string_pattern_mismatch' }],
+        }),
+      ),
+    ).toEqual({ slug: 'Usa solo minúsculas, números y guiones.' });
   });
 
   it('returns an empty object for other errors', () => {

@@ -7,7 +7,13 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 
 import { apiErrorMessage, apiFieldErrors } from '../core/api-error-messages';
 import { EventApiService } from './event-api.service';
@@ -20,7 +26,19 @@ const API_FIELDS = {
   partnerTwoName: 'details.partner_two_name',
   eventDate: 'event_date',
   startTime: 'start_time',
+  slug: 'slug',
 } as const;
+
+const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+/** Validates the normalized value (trimmed, lowercased), as it is sent on submit. */
+function slugValidator(control: AbstractControl<string>): ValidationErrors | null {
+  const slug = control.value.trim().toLowerCase();
+  if (slug.length === 0) return { required: true };
+  return slug.length < 3 || slug.length > 80 || !SLUG_PATTERN.test(slug)
+    ? { slugFormat: true }
+    : null;
+}
 
 type FieldName = keyof typeof API_FIELDS;
 
@@ -39,6 +57,22 @@ type FieldName = keyof typeof API_FIELDS;
         </p>
         @if (fieldError('title'); as message) {
           <p class="field-error" id="edit-title-error">{{ message }}</p>
+        }
+
+        <label for="edit-slug" i18n="@@events.edit.slug.label">Dirección web</label>
+        <div class="slug-field">
+          <span>/e/</span>
+          <input id="edit-slug" type="text" formControlName="slug" />
+        </div>
+        @if (event().status === 'published') {
+          <p class="hint" i18n="@@events.edit.slug.lockedHint">
+            Para cambiarla, despublica la boda
+          </p>
+        } @else {
+          <p class="hint" i18n="@@events.edit.slug.hint">Así será el enlace de vuestra boda</p>
+        }
+        @if (fieldError('slug'); as message) {
+          <p class="field-error" id="edit-slug-error">{{ message }}</p>
         }
 
         <label for="edit-partner-one" i18n="@@events.edit.partnerOne.label"
@@ -128,6 +162,11 @@ type FieldName = keyof typeof API_FIELDS;
       cursor: wait;
       opacity: 0.6;
     }
+    .slug-field {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
     .hint {
       margin: 0;
       font-size: 0.9rem;
@@ -157,6 +196,7 @@ export class EventEditFormComponent implements OnInit {
     partnerTwoName: ['', [Validators.required, Validators.maxLength(100), notBlank]],
     eventDate: [''],
     startTime: [''],
+    slug: ['', [slugValidator]],
   });
 
   constructor() {
@@ -171,7 +211,9 @@ export class EventEditFormComponent implements OnInit {
       partnerTwoName: event.details.partner_two_name,
       eventDate: event.event_date ?? '',
       startTime: event.start_time?.slice(0, 5) ?? '',
+      slug: event.slug,
     });
+    if (event.status === 'published') this.form.controls.slug.disable();
   }
 
   fieldError(controlName: FieldName): string {
@@ -180,7 +222,12 @@ export class EventEditFormComponent implements OnInit {
 
   private clientError(controlName: FieldName): string {
     const control = this.form.controls[controlName];
-    if (!control.touched || control.valid) return '';
+    if (!control.touched || control.valid || control.disabled) return '';
+    if (controlName === 'slug') {
+      return control.hasError('required')
+        ? $localize`:@@events.edit.slug.required:Escribe la dirección de tu boda.`
+        : $localize`:@@events.edit.slug.invalid:Usa solo minúsculas, números y guiones (entre 3 y 80 caracteres).`;
+    }
     if (control.hasError('maxlength')) {
       return controlName === 'title'
         ? $localize`:@@events.edit.title.tooLong:El título es demasiado largo.`
@@ -199,11 +246,13 @@ export class EventEditFormComponent implements OnInit {
     this.saving.set(true);
     this.errorMessage.set('');
     this.apiErrors.set({});
-    const { title, partnerOneName, partnerTwoName, eventDate, startTime } = this.form.getRawValue();
+    const { title, partnerOneName, partnerTwoName, eventDate, startTime, slug } =
+      this.form.getRawValue();
 
     try {
       const event = await this.eventApi.update({
         title: title.trim() || null,
+        slug: slug.trim().toLowerCase(),
         details: {
           partner_one_name: partnerOneName.trim(),
           partner_two_name: partnerTwoName.trim(),

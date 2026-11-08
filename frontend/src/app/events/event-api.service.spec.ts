@@ -66,6 +66,7 @@ describe('EventApiService', () => {
   it('puts the update body to /events/me with the Bearer token', async () => {
     const body: EventUpdateRequest = {
       title: 'Nuestra boda',
+      slug: 'ana-y-luis',
       details: { partner_one_name: 'Ana', partner_two_name: 'Luis' },
       event_date: '2027-06-12',
       start_time: '18:30:00',
@@ -147,4 +148,20 @@ describe('EventApiService', () => {
 
     await expect(result).resolves.toBeUndefined();
   });
+
+  it.each([['publish'], ['unpublish']] as const)(
+    '%s posts an empty body with the Bearer token',
+    async (action) => {
+      const result = service[action]();
+
+      const request = await vi.waitFor(() =>
+        httpTesting.expectOne(`${environment.apiBaseUrl}/events/me/${action}`),
+      );
+      expect(request.request.method).toBe('POST');
+      expect(request.request.headers.get('Authorization')).toBe('Bearer tok');
+      request.flush(eventRead);
+
+      await expect(result).resolves.toEqual(eventRead);
+    },
+  );
 });

@@ -1,5 +1,15 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  computed,
+  signal,
+  untracked,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 
 import { HealthService } from './services/health.service';
 
@@ -12,30 +22,36 @@ type BackendStatus = 'checking' | 'connected' | 'unavailable';
   template: `
     <main>
       <router-outlet />
-      <section class="connection" aria-labelledby="connection-title">
-        <h2 id="connection-title" i18n="@@connection.title">Conexión con el backend</h2>
-        <p class="status" role="status" aria-live="polite">
-          @if (backendStatus() === 'checking') {
-            <ng-container i18n="@@connection.checking">Comprobando la conexión…</ng-container>
-          } @else if (backendStatus() === 'connected') {
-            <ng-container i18n="@@connection.connected"
-              >Backend conectado correctamente.</ng-container
-            >
-          } @else {
-            <ng-container i18n="@@connection.unavailable">
-              No se pudo conectar con el backend. Comprueba que esté en marcha y vuelve a
-              intentarlo.
-            </ng-container>
-          }
-        </p>
-        <button type="button" (click)="checkBackend()" [disabled]="backendStatus() === 'checking'">
-          @if (backendStatus() === 'checking') {
-            <ng-container i18n="@@connection.checkingShort">Comprobando…</ng-container>
-          } @else {
-            <ng-container i18n="@@connection.retry">Comprobar de nuevo</ng-container>
-          }
-        </button>
-      </section>
+      @if (showConnection()) {
+        <section class="connection" aria-labelledby="connection-title">
+          <h2 id="connection-title" i18n="@@connection.title">Conexión con el backend</h2>
+          <p class="status" role="status" aria-live="polite">
+            @if (backendStatus() === 'checking') {
+              <ng-container i18n="@@connection.checking">Comprobando la conexión…</ng-container>
+            } @else if (backendStatus() === 'connected') {
+              <ng-container i18n="@@connection.connected"
+                >Backend conectado correctamente.</ng-container
+              >
+            } @else {
+              <ng-container i18n="@@connection.unavailable">
+                No se pudo conectar con el backend. Comprueba que esté en marcha y vuelve a
+                intentarlo.
+              </ng-container>
+            }
+          </p>
+          <button
+            type="button"
+            (click)="checkBackend()"
+            [disabled]="backendStatus() === 'checking'"
+          >
+            @if (backendStatus() === 'checking') {
+              <ng-container i18n="@@connection.checkingShort">Comprobando…</ng-container>
+            } @else {
+              <ng-container i18n="@@connection.retry">Comprobar de nuevo</ng-container>
+            }
+          </button>
+        </section>
+      }
     </main>
   `,
   styles: `
@@ -85,12 +101,28 @@ type BackendStatus = 'checking' | 'connected' | 'unavailable';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   private readonly healthService = inject(HealthService);
+  private readonly router = inject(Router);
+  private readonly currentUrl = signal<string | null>(null);
   readonly backendStatus = signal<BackendStatus>('checking');
+  readonly showConnection = computed(() => {
+    const url = this.currentUrl();
+    return url !== null && !url.startsWith('/e/');
+  });
 
-  ngOnInit(): void {
-    this.checkBackend();
+  constructor() {
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe((event) => this.currentUrl.set(event.urlAfterRedirects));
+    effect(() => {
+      if (this.showConnection()) {
+        untracked(() => this.checkBackend());
+      }
+    });
   }
 
   checkBackend(): void {

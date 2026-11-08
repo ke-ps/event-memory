@@ -34,7 +34,19 @@ export interface EventCreateRequest {
 
 export interface EventUpdateRequest {
   title: string | null;
+  slug: string;
   details: WeddingDetails;
   event_date: string | null;
   start_time: string | null;
+}
+
+export interface PublicEvent {
+  event_type: string;
+  title: string;
+  slug: string;
+  event_date: string | null;
+  start_time: string | null;
+  timezone: string;
+  details: WeddingDetails;
+  locations: Omit<EventLocation, 'id'>[];
 }

@@ -39,10 +39,27 @@ export class EventApiService {
     );
   }
 
+  async publish(): Promise<EventRead> {
+    return this.postAction('publish');
+  }
+
+  async unpublish(): Promise<EventRead> {
+    return this.postAction('unpublish');
+  }
+
   async deleteMine(): Promise<void> {
     const headers = await this.authHeaders();
     await firstValueFrom(
       this.http.delete<void>(`${environment.apiBaseUrl}/events/me`, { headers }),
+    );
+  }
+
+  private async postAction(action: 'publish' | 'unpublish'): Promise<EventRead> {
+    const headers = await this.authHeaders();
+    return firstValueFrom(
+      this.http.post<EventRead>(`${environment.apiBaseUrl}/events/me/${action}`, null, {
+        headers,
+      }),
     );
   }
 

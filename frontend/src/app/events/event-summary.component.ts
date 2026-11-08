@@ -2,11 +2,13 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
 import { EventRead } from './event.models';
+import { EventPublicationComponent } from './event-publication.component';
+import { eventTimeSuffix } from './event-time';
 
 @Component({
   selector: 'app-event-summary',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, EventPublicationComponent],
   template: `
     <section class="summary" aria-labelledby="event-title">
       <h2 id="event-title">{{ event().title }}</h2>
@@ -18,13 +20,7 @@ import { EventRead } from './event.models';
           >{{ timeSuffix() }}
         }
       </p>
-      <p>
-        @if (event().status === 'published') {
-          <ng-container i18n="@@events.summary.status.published">Publicado</ng-container>
-        } @else {
-          <ng-container i18n="@@events.summary.status.draft">Borrador</ng-container>
-        }
-      </p>
+      <app-event-publication [event]="event()" (changed)="changed.emit($event)" />
       <button type="button" (click)="edit.emit()" i18n="@@events.summary.edit">Editar</button>
       <button type="button" (click)="remove.emit()" i18n="@@events.summary.delete">
         Eliminar boda
@@ -45,10 +41,8 @@ import { EventRead } from './event.models';
 })
 export class EventSummaryComponent {
   readonly event = input.required<EventRead>();
+  readonly changed = output<EventRead>();
   readonly edit = output<void>();
   readonly remove = output<void>();
-  readonly timeSuffix = computed(() => {
-    const time = this.event().start_time;
-    return time ? `, ${time.slice(0, 5)}` : '';
-  });
+  readonly timeSuffix = computed(() => eventTimeSuffix(this.event().start_time));
 }
