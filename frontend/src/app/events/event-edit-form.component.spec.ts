@@ -56,6 +56,91 @@ describe('EventEditFormComponent', () => {
     expect(value(element, 'edit-start-time')).toBe('18:30');
   });
 
+  it('prefills the URL field', () => {
+    const { element } = setup();
+
+    expect(value(element, 'edit-slug')).toBe('ana-y-luis');
+  });
+
+  it('sends the edited slug trimmed and lowercased', async () => {
+    const { fixture, element, update, component } = setup();
+
+    fill(element, 'edit-slug', 'Boda-Ana ');
+    fixture.detectChanges();
+    await component.submit();
+
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ slug: 'boda-ana' }));
+  });
+
+  it('shows a format error for an invalid slug', async () => {
+    const { fixture, element, update, component } = setup();
+
+    fill(element, 'edit-slug', 'ana y luis');
+    fixture.detectChanges();
+    await component.submit();
+    fixture.detectChanges();
+
+    expect(update).not.toHaveBeenCalled();
+    expect(element.querySelector('#edit-slug-error')?.textContent).toContain(
+      'Usa solo minúsculas, números y guiones',
+    );
+  });
+
+  it('disables the URL field when published and still sends the slug', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: EventApiService,
+          useValue: { update: vi.fn((): Promise<EventRead> => Promise.resolve(currentEvent)) },
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(EventEditFormComponent);
+    fixture.componentRef.setInput('event', { ...currentEvent, status: 'published' });
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    const update = TestBed.inject(EventApiService).update as ReturnType<typeof vi.fn>;
+
+    expect(element.querySelector<HTMLInputElement>('#edit-slug')!.disabled).toBe(true);
+    expect(element.textContent).toContain('Para cambiarla, despublica la boda');
+    await fixture.componentInstance.submit();
+
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ slug: 'ana-y-luis' }));
+  });
+
+  it('shows slug_taken under the URL field', async () => {
+    const error = new HttpErrorResponse({
+      status: 409,
+      error: { code: 'slug_taken', errors: [{ field: 'slug', code: 'slug_taken' }] },
+    });
+    const { fixture, element, component } = setup(vi.fn(() => Promise.reject(error)));
+
+    await component.submit();
+    fixture.detectChanges();
+
+    expect(element.querySelector('#edit-slug-error')?.textContent).toContain(
+      'Esa dirección ya está en uso.',
+    );
+    expect(element.querySelector('[role="alert"]')).toBeNull();
+  });
+
+  it('shows event_date_required under the date', async () => {
+    const error = new HttpErrorResponse({
+      status: 422,
+      error: {
+        code: 'event_date_required',
+        errors: [{ field: 'event_date', code: 'event_date_required' }],
+      },
+    });
+    const { fixture, element, component } = setup(vi.fn(() => Promise.reject(error)));
+
+    await component.submit();
+    fixture.detectChanges();
+
+    expect(element.querySelector('#edit-event-date-error')?.textContent?.trim()).not.toBe('');
+    expect(element.querySelector('[role="alert"]')).toBeNull();
+  });
+
   it('sends the edited values and emits saved', async () => {
     const saved = { ...currentEvent, title: 'Nuestra boda' };
     const { fixture, element, update, component } = setup(vi.fn(() => Promise.resolve(saved)));
