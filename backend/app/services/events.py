@@ -118,6 +118,13 @@ def get_own_event(session: Session, owner_uid: str) -> Event:
     return event
 
 
+def get_published_event(session: Session, slug: str) -> Event:
+    event = event_repository.get_by_slug(session, slug.lower())
+    if event is None or event.status != "published":
+        raise AppError(404, "event_not_found", "No existe ningún evento con esa dirección.")
+    return event
+
+
 def update_own_event(session: Session, owner_uid: str, data: EventUpdate) -> Event:
     event = get_own_event(session, owner_uid)
     details = _validated_details(event.event_type, data.details)

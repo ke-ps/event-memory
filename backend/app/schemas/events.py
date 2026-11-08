@@ -57,3 +57,25 @@ class EventRead(BaseModel):
     locations: list[LocationRead]
     created_at: datetime
     updated_at: datetime
+
+
+class PublicLocationRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    label: str
+    venue_name: str
+    address: str
+    position: int
+
+
+class PublicEventRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    event_type: str
+    title: str
+    slug: str
+    event_date: date | None
+    start_time: time | None
+    timezone: str
+    details: dict[str, Any]
+    locations: list[PublicLocationRead]

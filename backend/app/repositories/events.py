@@ -8,6 +8,10 @@ def get_by_owner(session: Session, owner_uid: str) -> Event | None:
     return session.scalar(select(Event).where(Event.owner_firebase_uid == owner_uid))
 
 
+def get_by_slug(session: Session, slug: str) -> Event | None:
+    return session.scalar(select(Event).where(Event.slug == slug))
+
+
 def slug_exists(session: Session, slug: str) -> bool:
     return session.scalar(select(Event.id).where(Event.slug == slug)) is not None
 
