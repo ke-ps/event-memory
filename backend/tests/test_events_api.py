@@ -303,3 +303,43 @@ def test_owner_can_create_again_after_deleting(client: TestClient, as_user: AsUs
     response = client.post(URL, json=payload())
 
     assert response.status_code == 201
+
+
+def test_publish_returns_200(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.post(f"{URL}/me/publish")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "published"
+    assert "owner_firebase_uid" not in body
+
+
+def test_publish_without_date_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload(event_date=None))
+
+    response = client.post(f"{URL}/me/publish")
+
+    assert response.status_code == 422
+    assert response.json()["code"] == "event_date_required"
+
+
+def test_unpublish_returns_200(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+    client.post(f"{URL}/me/publish")
+
+    response = client.post(f"{URL}/me/unpublish")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "draft"
+
+
+def test_publish_without_token_returns_401(client: TestClient) -> None:
+    response = client.post(f"{URL}/me/publish")
+
+    assert response.status_code == 401
+    assert response.json()["code"] == "missing_token"

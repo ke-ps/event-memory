@@ -13,6 +13,8 @@ from app.services.events import (
     create_event,
     delete_own_event,
     get_own_event,
+    publish_own_event,
+    unpublish_own_event,
     update_own_event,
 )
 
@@ -393,3 +395,60 @@ def test_owner_can_create_again_after_deleting(db_session: Session) -> None:
     event = create_event(db_session, "uid-a", wedding())
 
     assert event.slug == "ana-y-luis"
+
+
+def test_publish_event_without_date(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event(db_session, "uid-a", edit(event_date=None))
+
+    with pytest.raises(AppError) as exc_info:
+        publish_own_event(db_session, "uid-a")
+
+    assert exc_info.value.status_code == 422
+    assert exc_info.value.code == "event_date_required"
+    assert exc_info.value.errors == [{"field": "event_date", "code": "event_date_required"}]
+    assert get_own_event(db_session, "uid-a").status == "draft"
+
+
+def test_publish_event(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event(db_session, "uid-a", edit(event_date=date(2027, 6, 12)))
+
+    assert publish_own_event(db_session, "uid-a").status == "published"
+
+
+def test_publish_event_twice(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event(db_session, "uid-a", edit(event_date=date(2027, 6, 12)))
+    publish_own_event(db_session, "uid-a")
+
+    assert publish_own_event(db_session, "uid-a").status == "published"
+
+
+def test_unpublish_event_keeps_data(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    before = update_own_event(db_session, "uid-a", edit(event_date=date(2027, 6, 12)))
+    title, slug, details = before.title, before.slug, dict(before.details)
+    publish_own_event(db_session, "uid-a")
+
+    event = unpublish_own_event(db_session, "uid-a")
+
+    assert event.status == "draft"
+    assert event.title == title
+    assert event.slug == slug
+    assert event.details == details
+    assert event.event_date == date(2027, 6, 12)
+
+
+def test_unpublish_draft_event(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    assert unpublish_own_event(db_session, "uid-a").status == "draft"
+
+
+def test_publish_and_unpublish_without_event(db_session: Session) -> None:
+    for action in (publish_own_event, unpublish_own_event):
+        with pytest.raises(AppError) as exc_info:
+            action(db_session, "uid-x")
+        assert exc_info.value.status_code == 404
+        assert exc_info.value.code == "event_not_found"

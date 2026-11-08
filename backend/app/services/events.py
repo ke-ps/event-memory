@@ -62,6 +62,15 @@ def _slug_taken() -> AppError:
     )
 
 
+def _date_required() -> AppError:
+    return AppError(
+        422,
+        "event_date_required",
+        "Una boda publicada necesita fecha.",
+        errors=[{"field": "event_date", "code": "event_date_required"}],
+    )
+
+
 def create_event(session: Session, owner_uid: str, data: EventCreate) -> Event:
     details = _validated_details(data.event_type, data.details)
     if event_repository.get_by_owner(session, owner_uid) is not None:
@@ -121,12 +130,7 @@ def update_own_event(session: Session, owner_uid: str, data: EventUpdate) -> Eve
             errors=[{"field": "slug", "code": "slug_locked"}],
         )
     if event.status == "published" and data.event_date is None:
-        raise AppError(
-            422,
-            "event_date_required",
-            "Una boda publicada necesita fecha.",
-            errors=[{"field": "event_date", "code": "event_date_required"}],
-        )
+        raise _date_required()
     if slug_changed and event_repository.slug_exists(session, data.slug):
         raise _slug_taken()
     try:
@@ -146,6 +150,30 @@ def update_own_event(session: Session, owner_uid: str, data: EventUpdate) -> Eve
         session.rollback()
         raise
     return event
+
+
+def _set_status(session: Session, owner_uid: str, status: str) -> Event:
+    event = get_own_event(session, owner_uid)
+    if status == "published" and event.event_date is None:
+        raise _date_required()
+    if event.status == status:
+        return event
+    try:
+        event.status = status
+        session.commit()
+        session.refresh(event)
+    except Exception:
+        session.rollback()
+        raise
+    return event
+
+
+def publish_own_event(session: Session, owner_uid: str) -> Event:
+    return _set_status(session, owner_uid, "published")
+
+
+def unpublish_own_event(session: Session, owner_uid: str) -> Event:
+    return _set_status(session, owner_uid, "draft")
 
 
 def delete_own_event(session: Session, owner_uid: str) -> None:
