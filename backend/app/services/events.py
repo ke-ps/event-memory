@@ -8,7 +8,7 @@ from app.core.errors import AppError
 from app.models.event import Event
 from app.repositories import events as event_repository
 from app.schemas.event_details import UnknownEventTypeError, validate_event_details
-from app.schemas.events import EventCreate
+from app.schemas.events import EventCreate, EventUpdate
 from app.services.slugs import slugify
 
 TITLE_MAX_LENGTH = 150
@@ -17,9 +17,9 @@ MAX_SLUG_ATTEMPTS = 5
 SLUG_CONSTRAINT = "uq_events_slug"
 
 
-def _validated_details(data: EventCreate) -> dict[str, Any]:
+def _validated_details(event_type: str, details: dict[str, Any]) -> dict[str, Any]:
     try:
-        return validate_event_details(data.event_type, data.details)
+        return validate_event_details(event_type, details)
     except UnknownEventTypeError:
         raise AppError(
             422, "unsupported_event_type", "El tipo de evento no está admitido."
@@ -37,6 +37,10 @@ def _validated_details(data: EventCreate) -> dict[str, Any]:
         ) from None
 
 
+def _generated_title(details: dict[str, Any]) -> str:
+    return f"{details['partner_one_name']} y {details['partner_two_name']}"[:TITLE_MAX_LENGTH]
+
+
 def _candidate_slug(base: str, number: int) -> str:
     if number == 1:
         return base
@@ -50,11 +54,11 @@ def _is_slug_conflict(exc: IntegrityError) -> bool:
 
 
 def create_event(session: Session, owner_uid: str, data: EventCreate) -> Event:
-    details = _validated_details(data)
+    details = _validated_details(data.event_type, data.details)
     if event_repository.get_by_owner(session, owner_uid) is not None:
         raise AppError(409, "event_already_exists", "Ya tienes un evento.")
 
-    title = f"{details['partner_one_name']} y {details['partner_two_name']}"[:TITLE_MAX_LENGTH]
+    title = _generated_title(details)
     base = slugify(title) or "evento"
 
     number = 1
@@ -93,4 +97,20 @@ def get_own_event(session: Session, owner_uid: str) -> Event:
     event = event_repository.get_by_owner(session, owner_uid)
     if event is None:
         raise AppError(404, "event_not_found", "Todavía no has creado tu evento.")
+    return event
+
+
+def update_own_event(session: Session, owner_uid: str, data: EventUpdate) -> Event:
+    event = get_own_event(session, owner_uid)
+    details = _validated_details(event.event_type, data.details)
+    try:
+        event.title = data.title or _generated_title(details)
+        event.details = details
+        event.event_date = data.event_date
+        event.start_time = data.start_time
+        session.commit()
+        session.refresh(event)
+    except Exception:
+        session.rollback()
+        raise
     return event

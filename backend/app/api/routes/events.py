@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies import CurrentUser, get_current_user
 from app.db.session import get_db
-from app.schemas.events import EventCreate, EventRead
-from app.services.events import create_event, get_own_event
+from app.schemas.events import EventCreate, EventRead, EventUpdate
+from app.services.events import create_event, get_own_event, update_own_event
 
 router = APIRouter()
 
@@ -31,3 +31,12 @@ def get_my_event(
     session: Annotated[Session, Depends(get_db)],
 ) -> EventRead:
     return EventRead.model_validate(get_own_event(session, user.uid))
+
+
+@router.put("/me", response_model=EventRead, summary="Editar el evento del usuario")
+def update_my_event(
+    data: EventUpdate,
+    user: Annotated[CurrentUser, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_db)],
+) -> EventRead:
+    return EventRead.model_validate(update_own_event(session, user.uid, data))

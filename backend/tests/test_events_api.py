@@ -120,3 +120,105 @@ def test_requires_authentication(client: TestClient) -> None:
     assert post.json()["code"] == "missing_token"
     assert get.status_code == 401
     assert get.json()["code"] == "missing_token"
+
+
+def update_payload(**overrides: object) -> dict[str, object]:
+    body: dict[str, object] = {
+        "title": "Nuestra boda",
+        "details": {"partner_one_name": "Ana", "partner_two_name": "Luis"},
+        "event_date": "2027-06-12",
+        "start_time": "18:30",
+    }
+    body.update(overrides)
+    return body
+
+
+def test_update_event_returns_200(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    created = client.post(URL, json=payload()).json()
+
+    response = client.put(f"{URL}/me", json=update_payload())
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["title"] == "Nuestra boda"
+    assert body["start_time"] == "18:30:00"
+    assert body["slug"] == created["slug"]
+    assert "owner_firebase_uid" not in body
+
+
+def test_update_event_without_event_returns_404(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+
+    response = client.put(f"{URL}/me", json=update_payload())
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "event_not_found"
+
+
+def test_update_event_missing_field_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+    body = update_payload()
+    del body["start_time"]
+
+    response = client.put(f"{URL}/me", json=body)
+
+    assert response.status_code == 422
+    result = response.json()
+    assert result["code"] == "validation_error"
+    assert any(error["field"] == "start_time" for error in result["errors"])
+
+
+def test_update_event_extra_field_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    created = client.post(URL, json=payload()).json()
+
+    response = client.put(f"{URL}/me", json=update_payload(slug="otra"))
+
+    assert response.status_code == 422
+    assert client.get(f"{URL}/me").json()["slug"] == created["slug"]
+
+
+def test_update_event_title_too_long_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.put(f"{URL}/me", json=update_payload(title="x" * 151))
+
+    assert response.status_code == 422
+    assert any(error["field"] == "title" for error in response.json()["errors"])
+
+
+def test_update_event_invalid_details_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.put(
+        f"{URL}/me",
+        json=update_payload(details={"partner_one_name": "", "partner_two_name": "Luis"}),
+    )
+
+    assert response.status_code == 422
+    result = response.json()
+    assert result["code"] == "validation_error"
+    assert any(error["field"] == "details.partner_one_name" for error in result["errors"])
+
+
+def test_update_event_without_token_returns_401(client: TestClient) -> None:
+    response = client.put(f"{URL}/me", json=update_payload())
+
+    assert response.status_code == 401
+    assert response.json()["code"] == "missing_token"
+
+
+def test_update_event_only_touches_own_event(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    original = client.post(URL, json=payload()).json()
+    as_user("uid-2", None)
+    client.post(URL, json=payload())
+
+    assert client.put(f"{URL}/me", json=update_payload(title="Otro título")).status_code == 200
+
+    as_user("uid-1", None)
+    assert client.get(f"{URL}/me").json()["title"] == original["title"]

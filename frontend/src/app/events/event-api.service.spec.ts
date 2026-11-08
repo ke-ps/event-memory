@@ -6,7 +6,7 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
 import { EventApiService } from './event-api.service';
-import { EventCreateRequest, EventRead } from './event.models';
+import { EventCreateRequest, EventRead, EventUpdateRequest } from './event.models';
 
 const eventRead: EventRead = {
   id: 'id-1',
@@ -56,6 +56,27 @@ describe('EventApiService', () => {
       httpTesting.expectOne(`${environment.apiBaseUrl}/events`),
     );
     expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual(body);
+    expect(request.request.headers.get('Authorization')).toBe('Bearer tok');
+    request.flush(eventRead);
+
+    await expect(result).resolves.toEqual(eventRead);
+  });
+
+  it('puts the update body to /events/me with the Bearer token', async () => {
+    const body: EventUpdateRequest = {
+      title: 'Nuestra boda',
+      details: { partner_one_name: 'Ana', partner_two_name: 'Luis' },
+      event_date: '2027-06-12',
+      start_time: '18:30:00',
+    };
+
+    const result = service.update(body);
+
+    const request = await vi.waitFor(() =>
+      httpTesting.expectOne(`${environment.apiBaseUrl}/events/me`),
+    );
+    expect(request.request.method).toBe('PUT');
     expect(request.request.body).toEqual(body);
     expect(request.request.headers.get('Authorization')).toBe('Bearer tok');
     request.flush(eventRead);
