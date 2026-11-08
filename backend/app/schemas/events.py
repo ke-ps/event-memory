@@ -2,7 +2,12 @@ from datetime import date, datetime, time
 from typing import Annotated, Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, StringConstraints
+from pydantic import BaseModel, BeforeValidator, ConfigDict, StringConstraints
+
+
+def _normalize_slug(value: object) -> object:
+    # pydantic checks the pattern before to_lower, so normalize first.
+    return value.strip().lower() if isinstance(value, str) else value
 
 
 class EventCreate(BaseModel):
@@ -17,6 +22,11 @@ class EventUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     title: Annotated[str, StringConstraints(strip_whitespace=True, max_length=150)] | None
+    slug: Annotated[
+        str,
+        BeforeValidator(_normalize_slug),
+        StringConstraints(min_length=3, max_length=80, pattern=r"^[a-z0-9]+(-[a-z0-9]+)*$"),
+    ]
     details: dict[str, Any]
     event_date: date | None
     start_time: time | None

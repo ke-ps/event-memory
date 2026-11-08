@@ -125,6 +125,7 @@ def test_requires_authentication(client: TestClient) -> None:
 def update_payload(**overrides: object) -> dict[str, object]:
     body: dict[str, object] = {
         "title": "Nuestra boda",
+        "slug": "ana-y-luis",
         "details": {"partner_one_name": "Ana", "partner_two_name": "Luis"},
         "event_date": "2027-06-12",
         "start_time": "18:30",
@@ -174,7 +175,7 @@ def test_update_event_extra_field_returns_422(client: TestClient, as_user: AsUse
     as_user("uid-1", None)
     created = client.post(URL, json=payload()).json()
 
-    response = client.put(f"{URL}/me", json=update_payload(slug="otra"))
+    response = client.put(f"{URL}/me", json=update_payload(owner_firebase_uid="x"))
 
     assert response.status_code == 422
     assert client.get(f"{URL}/me").json()["slug"] == created["slug"]
@@ -218,10 +219,39 @@ def test_update_event_only_touches_own_event(client: TestClient, as_user: AsUser
     as_user("uid-2", None)
     client.post(URL, json=payload())
 
-    assert client.put(f"{URL}/me", json=update_payload(title="Otro título")).status_code == 200
+    response = client.put(
+        f"{URL}/me", json=update_payload(title="Otro título", slug="ana-y-luis-2")
+    )
+    assert response.status_code == 200
 
     as_user("uid-1", None)
     assert client.get(f"{URL}/me").json()["title"] == original["title"]
+
+
+def test_update_event_slug_with_spaces_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.put(f"{URL}/me", json=update_payload(slug="Ana Y Luis "))
+
+    assert response.status_code == 422
+    result = response.json()
+    assert result["code"] == "validation_error"
+    assert any(error["field"] == "slug" for error in result["errors"])
+
+
+def test_update_event_slug_taken_returns_409(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+    as_user("uid-2", None)
+    client.post(URL, json=payload())
+
+    response = client.put(f"{URL}/me", json=update_payload(slug="ana-y-luis"))
+
+    assert response.status_code == 409
+    result = response.json()
+    assert result["code"] == "slug_taken"
+    assert result["errors"][0]["field"] == "slug"
 
 
 def test_delete_event_returns_204(client: TestClient, as_user: AsUser) -> None:

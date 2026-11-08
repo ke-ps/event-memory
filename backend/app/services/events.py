@@ -53,6 +53,15 @@ def _is_slug_conflict(exc: IntegrityError) -> bool:
     return getattr(diag, "constraint_name", None) == SLUG_CONSTRAINT
 
 
+def _slug_taken() -> AppError:
+    return AppError(
+        409,
+        "slug_taken",
+        "Esa dirección ya está en uso.",
+        errors=[{"field": "slug", "code": "slug_taken"}],
+    )
+
+
 def create_event(session: Session, owner_uid: str, data: EventCreate) -> Event:
     details = _validated_details(data.event_type, data.details)
     if event_repository.get_by_owner(session, owner_uid) is not None:
@@ -103,13 +112,36 @@ def get_own_event(session: Session, owner_uid: str) -> Event:
 def update_own_event(session: Session, owner_uid: str, data: EventUpdate) -> Event:
     event = get_own_event(session, owner_uid)
     details = _validated_details(event.event_type, data.details)
+    slug_changed = data.slug != event.slug
+    if event.status == "published" and slug_changed:
+        raise AppError(
+            409,
+            "slug_locked",
+            "La dirección de una boda publicada no se puede cambiar.",
+            errors=[{"field": "slug", "code": "slug_locked"}],
+        )
+    if event.status == "published" and data.event_date is None:
+        raise AppError(
+            422,
+            "event_date_required",
+            "Una boda publicada necesita fecha.",
+            errors=[{"field": "event_date", "code": "event_date_required"}],
+        )
+    if slug_changed and event_repository.slug_exists(session, data.slug):
+        raise _slug_taken()
     try:
         event.title = data.title or _generated_title(details)
+        event.slug = data.slug
         event.details = details
         event.event_date = data.event_date
         event.start_time = data.start_time
         session.commit()
         session.refresh(event)
+    except IntegrityError as exc:
+        session.rollback()
+        if _is_slug_conflict(exc):
+            raise _slug_taken() from None
+        raise
     except Exception:
         session.rollback()
         raise
