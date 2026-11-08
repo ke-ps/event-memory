@@ -5,6 +5,7 @@ import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 
 import { EventApiService } from '../events/event-api.service';
+import { EventDeleteConfirmComponent } from '../events/event-delete-confirm.component';
 import { EventEditFormComponent } from '../events/event-edit-form.component';
 import { EventCreateFormComponent } from '../events/event-create-form.component';
 import { EventRead } from '../events/event.models';
@@ -34,7 +35,7 @@ async function setup(getMine: () => Promise<EventRead | null>) {
       { provide: AuthService, useValue: { currentUser: signal({ email: 'a@b.c' }) } },
       {
         provide: EventApiService,
-        useValue: { getMine: getMineMock, create: vi.fn(), update: vi.fn() },
+        useValue: { getMine: getMineMock, create: vi.fn(), update: vi.fn(), deleteMine: vi.fn() },
       },
     ],
   });
@@ -148,14 +149,58 @@ describe('DashboardPageComponent', () => {
     expect(text(fixture)).toContain('Ana y Luis');
     expect((fixture.nativeElement as HTMLElement).querySelector('app-event-edit-form')).toBeNull();
   });
+
+  it('asks for confirmation before deleting', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+    const root = fixture.nativeElement as HTMLElement;
+
+    clickButton(fixture, 'Eliminar boda');
+
+    expect(root.querySelector('app-event-delete-confirm')).not.toBeNull();
+    expect(root.querySelector('app-event-summary')).toBeNull();
+  });
+
+  it('returns to the summary when the deletion is cancelled', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+    clickButton(fixture, 'Eliminar boda');
+
+    deleteConfirm(fixture).cancelled.emit();
+    fixture.detectChanges();
+
+    expect(text(fixture)).toContain('Ana y Luis');
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('app-event-delete-confirm'),
+    ).toBeNull();
+  });
+
+  it('shows the create form after deleting the event', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+    clickButton(fixture, 'Eliminar boda');
+
+    deleteConfirm(fixture).deleted.emit();
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.querySelector('app-event-create-form')).not.toBeNull();
+    expect(text(fixture)).not.toContain('Ana y Luis');
+  });
 });
 
-function clickEdit(fixture: ComponentFixture<DashboardPageComponent>): void {
+function clickButton(fixture: ComponentFixture<DashboardPageComponent>, label: string): void {
   const button = Array.from(
     (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button'),
-  ).find((b) => b.textContent?.trim() === 'Editar')!;
+  ).find((b) => b.textContent?.trim() === label)!;
   button.click();
   fixture.detectChanges();
+}
+
+function clickEdit(fixture: ComponentFixture<DashboardPageComponent>): void {
+  clickButton(fixture, 'Editar');
+}
+
+function deleteConfirm(fixture: ComponentFixture<DashboardPageComponent>) {
+  return fixture.debugElement.query(By.directive(EventDeleteConfirmComponent))
+    .componentInstance as EventDeleteConfirmComponent;
 }
 
 function editForm(fixture: ComponentFixture<DashboardPageComponent>) {

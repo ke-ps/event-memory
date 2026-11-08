@@ -134,4 +134,17 @@ describe('EventApiService', () => {
       }),
     ).rejects.toThrow('not_authenticated');
   });
+
+  it('deletes /events/me with the Bearer token', async () => {
+    const result = service.deleteMine();
+
+    const request = await vi.waitFor(() =>
+      httpTesting.expectOne(`${environment.apiBaseUrl}/events/me`),
+    );
+    expect(request.request.method).toBe('DELETE');
+    expect(request.request.headers.get('Authorization')).toBe('Bearer tok');
+    request.flush(null, { status: 204, statusText: 'No Content' });
+
+    await expect(result).resolves.toBeUndefined();
+  });
 });
