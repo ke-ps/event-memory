@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 
 import { apiErrorMessage } from '../core/api-error-messages';
@@ -65,15 +66,19 @@ import { PublicEventApiService } from './public-event-api.service';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PublicEventPageComponent implements OnInit {
+export class PublicEventPageComponent {
   private readonly api = inject(PublicEventApiService);
-  private readonly slug = inject(ActivatedRoute).snapshot.paramMap.get('slug') ?? '';
+  private readonly route = inject(ActivatedRoute);
+  private slug = '';
   readonly state = signal<'loading' | 'ready' | 'unavailable' | 'error'>('loading');
   readonly event = signal<PublicEvent | null>(null);
   readonly errorMessage = signal('');
 
-  ngOnInit(): void {
-    void this.load();
+  constructor() {
+    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      this.slug = params.get('slug') ?? '';
+      void this.load();
+    });
   }
 
   async load(): Promise<void> {

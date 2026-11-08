@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
 import { PublicEvent } from '../events/event.models';
@@ -19,11 +20,12 @@ const publicEvent: PublicEvent = {
 
 async function setup(get: () => Promise<PublicEvent | null>) {
   const getMock = vi.fn(get);
+  const params = new BehaviorSubject(convertToParamMap({ slug: 'ana-y-luis' }));
   TestBed.configureTestingModule({
     providers: [
       {
         provide: ActivatedRoute,
-        useValue: { snapshot: { paramMap: convertToParamMap({ slug: 'ana-y-luis' }) } },
+        useValue: { paramMap: params },
       },
       { provide: PublicEventApiService, useValue: { get: getMock } },
     ],
@@ -32,7 +34,7 @@ async function setup(get: () => Promise<PublicEvent | null>) {
   fixture.detectChanges();
   await fixture.whenStable();
   fixture.detectChanges();
-  return { fixture, get: getMock };
+  return { fixture, get: getMock, params };
 }
 
 function text(fixture: ComponentFixture<PublicEventPageComponent>): string {
@@ -71,5 +73,14 @@ describe('PublicEventPageComponent', () => {
 
     expect(get).toHaveBeenCalledTimes(2);
     expect(text(fixture)).toContain('Ana y Luis');
+  });
+
+  it('reloads when the slug param changes', async () => {
+    const { fixture, get, params } = await setup(() => Promise.resolve(publicEvent));
+
+    params.next(convertToParamMap({ slug: 'otra-boda' }));
+    await fixture.whenStable();
+
+    expect(get).toHaveBeenLastCalledWith('otra-boda');
   });
 });
