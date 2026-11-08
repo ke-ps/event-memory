@@ -75,15 +75,17 @@ describe('EventEditFormComponent', () => {
   it('shows a format error for an invalid slug', async () => {
     const { fixture, element, update, component } = setup();
 
-    fill(element, 'edit-slug', 'ana y luis');
-    fixture.detectChanges();
-    await component.submit();
-    fixture.detectChanges();
+    for (const invalid of ['ana y luis', 'ab', 'x'.repeat(81)]) {
+      fill(element, 'edit-slug', invalid);
+      fixture.detectChanges();
+      await component.submit();
+      fixture.detectChanges();
 
-    expect(update).not.toHaveBeenCalled();
-    expect(element.querySelector('#edit-slug-error')?.textContent).toContain(
-      'Usa solo minúsculas, números y guiones',
-    );
+      expect(update).not.toHaveBeenCalled();
+      expect(element.querySelector('#edit-slug-error')?.textContent).toContain(
+        'Usa solo minúsculas, números y guiones',
+      );
+    }
   });
 
   it('disables the URL field when published and still sends the slug', async () => {
@@ -124,6 +126,28 @@ describe('EventEditFormComponent', () => {
     expect(element.querySelector('[role="alert"]')).toBeNull();
   });
 
+  it('shows slug_locked under the disabled URL field', async () => {
+    const error = new HttpErrorResponse({
+      status: 409,
+      error: { code: 'slug_locked', errors: [{ field: 'slug', code: 'slug_locked' }] },
+    });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: EventApiService, useValue: { update: vi.fn(() => Promise.reject(error)) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(EventEditFormComponent);
+    fixture.componentRef.setInput('event', { ...currentEvent, status: 'published' });
+    fixture.detectChanges();
+
+    await fixture.componentInstance.submit();
+    fixture.detectChanges();
+
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('#edit-slug-error')?.textContent,
+    ).toContain('Para cambiar la dirección, despublica la boda.');
+  });
+
   it('shows event_date_required under the date', async () => {
     const error = new HttpErrorResponse({
       status: 422,
@@ -137,7 +161,9 @@ describe('EventEditFormComponent', () => {
     await component.submit();
     fixture.detectChanges();
 
-    expect(element.querySelector('#edit-event-date-error')?.textContent?.trim()).not.toBe('');
+    expect(element.querySelector('#edit-event-date-error')?.textContent).toContain(
+      'Añade la fecha para poder publicar.',
+    );
     expect(element.querySelector('[role="alert"]')).toBeNull();
   });
 
