@@ -114,3 +114,13 @@ def update_own_event(session: Session, owner_uid: str, data: EventUpdate) -> Eve
         session.rollback()
         raise
     return event
+
+
+def delete_own_event(session: Session, owner_uid: str) -> None:
+    event = get_own_event(session, owner_uid)
+    try:
+        event_repository.delete(session, event)
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise

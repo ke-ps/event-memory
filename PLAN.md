@@ -146,7 +146,7 @@ En el MVP los módulos son secciones de información que el organizador activa y
 * [x] Crear evento (API y formulario en el panel).
 * [x] Consultar el evento propio.
 * [x] Editar el evento.
-* [ ] Eliminar el evento (borrado definitivo con confirmación).
+* [x] Eliminar el evento (borrado definitivo con confirmación).
 
 **Terminado cuando:** un organizador autenticado puede crear, ver, editar y eliminar su boda desde el panel, no puede crear un segundo evento y no puede acceder a eventos de otros usuarios.
 

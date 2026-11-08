@@ -39,6 +39,13 @@ export class EventApiService {
     );
   }
 
+  async deleteMine(): Promise<void> {
+    const headers = await this.authHeaders();
+    await firstValueFrom(
+      this.http.delete<void>(`${environment.apiBaseUrl}/events/me`, { headers }),
+    );
+  }
+
   private async authHeaders(): Promise<HttpHeaders> {
     const user = this.auth.currentUser();
     if (!user) {

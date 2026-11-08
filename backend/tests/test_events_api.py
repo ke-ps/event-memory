@@ -222,3 +222,54 @@ def test_update_event_only_touches_own_event(client: TestClient, as_user: AsUser
 
     as_user("uid-1", None)
     assert client.get(f"{URL}/me").json()["title"] == original["title"]
+
+
+def test_delete_event_returns_204(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.delete(f"{URL}/me")
+
+    assert response.status_code == 204
+    assert response.content == b""
+    assert client.get(f"{URL}/me").status_code == 404
+
+
+def test_delete_event_without_event_returns_404(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+
+    response = client.delete(f"{URL}/me")
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "event_not_found"
+
+
+def test_delete_event_without_token_returns_401(client: TestClient) -> None:
+    response = client.delete(f"{URL}/me")
+
+    assert response.status_code == 401
+    assert response.json()["code"] == "missing_token"
+
+
+def test_delete_event_only_removes_own_event(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+    as_user("uid-2", None)
+    client.post(URL, json=payload(details={"partner_one_name": "Eva", "partner_two_name": "Juan"}))
+
+    client.delete(f"{URL}/me")
+
+    as_user("uid-1", None)
+    response = client.get(f"{URL}/me")
+    assert response.status_code == 200
+    assert response.json()["title"] == "Ana y Luis"
+
+
+def test_owner_can_create_again_after_deleting(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+    client.delete(f"{URL}/me")
+
+    response = client.post(URL, json=payload())
+
+    assert response.status_code == 201

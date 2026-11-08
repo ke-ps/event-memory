@@ -7,8 +7,14 @@ from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
 from app.models.event import Event
+from app.models.event_location import EventLocation
 from app.schemas.events import EventCreate, EventUpdate
-from app.services.events import create_event, get_own_event, update_own_event
+from app.services.events import (
+    create_event,
+    delete_own_event,
+    get_own_event,
+    update_own_event,
+)
 
 
 def wedding(one: str = "Ana", two: str = "Luis") -> EventCreate:
@@ -250,3 +256,50 @@ def test_update_event_with_invalid_details(db_session: Session) -> None:
 def test_update_event_title_too_long_is_rejected_by_schema() -> None:
     with pytest.raises(ValidationError):
         edit(title="x" * 151)
+
+
+def test_delete_event_removes_it_and_its_locations(db_session: Session) -> None:
+    event = create_event(db_session, "uid-a", wedding())
+    db_session.add(
+        EventLocation(
+            event_id=event.id,
+            label="Ceremonia",
+            venue_name="Iglesia",
+            address="Calle 1",
+            position=1,
+        )
+    )
+    db_session.flush()
+
+    delete_own_event(db_session, "uid-a")
+
+    assert db_session.scalar(select(func.count()).select_from(Event)) == 0
+    assert db_session.scalar(select(func.count()).select_from(EventLocation)) == 0
+
+
+def test_delete_event_without_event(db_session: Session) -> None:
+    with pytest.raises(AppError) as exc_info:
+        delete_own_event(db_session, "uid-a")
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.code == "event_not_found"
+
+
+def test_delete_event_only_removes_own_event(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    create_event(db_session, "uid-b", wedding("Eva", "Juan"))
+
+    delete_own_event(db_session, "uid-a")
+
+    assert get_own_event(db_session, "uid-b").title == "Eva y Juan"
+    with pytest.raises(AppError):
+        get_own_event(db_session, "uid-a")
+
+
+def test_owner_can_create_again_after_deleting(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    delete_own_event(db_session, "uid-a")
+
+    event = create_event(db_session, "uid-a", wedding())
+
+    assert event.slug == "ana-y-luis"

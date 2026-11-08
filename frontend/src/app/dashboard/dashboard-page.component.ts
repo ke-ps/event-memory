@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { apiErrorMessage } from '../core/api-error-messages';
 import { EventApiService } from '../events/event-api.service';
 import { EventCreateFormComponent } from '../events/event-create-form.component';
+import { EventDeleteConfirmComponent } from '../events/event-delete-confirm.component';
 import { EventEditFormComponent } from '../events/event-edit-form.component';
 import { EventSummaryComponent } from '../events/event-summary.component';
 import { EventRead } from '../events/event.models';
@@ -12,7 +13,13 @@ import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [RouterLink, EventCreateFormComponent, EventEditFormComponent, EventSummaryComponent],
+  imports: [
+    RouterLink,
+    EventCreateFormComponent,
+    EventDeleteConfirmComponent,
+    EventEditFormComponent,
+    EventSummaryComponent,
+  ],
   template: `
     <main class="dashboard" aria-labelledby="dashboard-title">
       <p class="eyebrow">Event Memory</p>
@@ -33,8 +40,15 @@ import { AuthService } from '../services/auth.service';
         }
         @case ('ready') {
           @if (event(); as currentEvent) {
-            <app-event-summary [event]="currentEvent" (edit)="state.set('editing')" />
+            <app-event-summary
+              [event]="currentEvent"
+              (edit)="state.set('editing')"
+              (remove)="state.set('confirmingDelete')"
+            />
           }
+        }
+        @case ('confirmingDelete') {
+          <app-event-delete-confirm (deleted)="onDeleted()" (cancelled)="state.set('ready')" />
         }
         @case ('editing') {
           @if (event(); as currentEvent) {
@@ -109,7 +123,9 @@ import { AuthService } from '../services/auth.service';
 export class DashboardPageComponent implements OnInit {
   private readonly eventApi = inject(EventApiService);
   readonly authService = inject(AuthService);
-  readonly state = signal<'loading' | 'empty' | 'ready' | 'editing' | 'error'>('loading');
+  readonly state = signal<'loading' | 'empty' | 'ready' | 'editing' | 'confirmingDelete' | 'error'>(
+    'loading',
+  );
   readonly event = signal<EventRead | null>(null);
   readonly errorMessage = signal('');
 
@@ -137,5 +153,10 @@ export class DashboardPageComponent implements OnInit {
   onSaved(event: EventRead): void {
     this.event.set(event);
     this.state.set('ready');
+  }
+
+  onDeleted(): void {
+    this.event.set(null);
+    this.state.set('empty');
   }
 }

@@ -26,6 +26,9 @@ import { EventRead } from './event.models';
         }
       </p>
       <button type="button" (click)="edit.emit()" i18n="@@events.summary.edit">Editar</button>
+      <button type="button" (click)="remove.emit()" i18n="@@events.summary.delete">
+        Eliminar boda
+      </button>
     </section>
   `,
   styles: `
@@ -43,6 +46,7 @@ import { EventRead } from './event.models';
 export class EventSummaryComponent {
   readonly event = input.required<EventRead>();
   readonly edit = output<void>();
+  readonly remove = output<void>();
   readonly timeSuffix = computed(() => {
     const time = this.event().start_time;
     return time ? `, ${time.slice(0, 5)}` : '';
