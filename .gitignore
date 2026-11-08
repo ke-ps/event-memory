@@ -16,6 +16,9 @@ __pycache__/
 .env.*
 !.env.example
 
+# Firebase web configuration (local only)
+frontend/src/environments/environment.local.ts
+
 # IDE
 .vscode/
 .idea/

@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="es" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="connection.title" datatype="html">
+        <source>Conexión con el backend</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">16,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.checking" datatype="html">
+        <source>Comprobando la conexión…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.connected" datatype="html">
+        <source>Backend conectado correctamente.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">22,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.unavailable" datatype="html">
+        <source> No se pudo conectar con el backend. Comprueba que esté en marcha y vuelve a intentarlo. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">26,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.checkingShort" datatype="html">
+        <source>Comprobando…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">33,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="connection.retry" datatype="html">
+        <source>Comprobar de nuevo</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.greeting" datatype="html">
+        <source>Hola, <x id="INTERPOLATION" equiv-text="{{ user.email }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">20,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.connected" datatype="html">
+        <source>Tu cuenta está conectada.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">21,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.goToDashboard" datatype="html">
+        <source>Ir a mi espacio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.identityVerified" datatype="html">
+        <source> Identidad verificada por el backend: <x id="INTERPOLATION" equiv-text="{{ verifiedIdentity.uid }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">25,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.verifyingIdentity" datatype="html">
+        <source> Verificando tu identidad con el backend… </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">29,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.signOut" datatype="html">
+        <source> Cerrar sesión </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">35,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.signIn.title" datatype="html">
+        <source>Inicia sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.signIn.intro" datatype="html">
+        <source> Accede para empezar a preparar vuestro espacio. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.title" datatype="html">
+        <source>Crea tu cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.intro" datatype="html">
+        <source> Regístrate para empezar a preparar vuestro espacio. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.firebaseNotConfigured" datatype="html">
+        <source> Falta la configuración local de Firebase. Sigue los pasos de desarrollo local para conectarla. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">52,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.email.label" datatype="html">
+        <source>Correo electrónico</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">58,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.email.invalid" datatype="html">
+        <source> Escribe un correo electrónico válido. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">62,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.password.label" datatype="html">
+        <source>Contraseña</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">66,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.password.tooShort" datatype="html">
+        <source> La contraseña debe tener al menos 6 caracteres. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">79,81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="common.loading" datatype="html">
+        <source>Un momento…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">89,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.signIn.submit" datatype="html">
+        <source>Entrar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">91,92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.register.submit" datatype="html">
+        <source>Crear cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">93,95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.switchToRegister" datatype="html">
+        <source>¿Aún no tienes cuenta? Regístrate</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">101,103</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.switchToSignIn" datatype="html">
+        <source>¿Ya tienes cuenta? Inicia sesión</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">105,107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.error.operationFailed" datatype="html">
+        <source>No se pudo completar la operación. Comprueba los datos y que Firebase y el backend estén configurados.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">257</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.error.signOutFailed" datatype="html">
+        <source>No se pudo cerrar la sesión. Inténtalo de nuevo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">271</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.error.verificationFailed" datatype="html">
+        <source>La sesión está iniciada, pero el backend no pudo verificar la identidad. Comprueba su configuración.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/auth/auth-page.component.ts</context>
+          <context context-type="linenumber">285</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.event_already_exists" datatype="html">
+        <source>Ya tienes una boda creada.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.unsupported_event_type" datatype="html">
+        <source>Este tipo de evento todavía no está disponible.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.validation_error" datatype="html">
+        <source>Revisa los datos del formulario.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.event_not_found" datatype="html">
+        <source>Todavía no has creado tu boda.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.missing_token" datatype="html">
+        <source>Tu sesión ha caducado. Vuelve a iniciar sesión.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.invalid_token" datatype="html">
+        <source>Tu sesión ha caducado. Vuelve a iniciar sesión.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.auth_unavailable" datatype="html">
+        <source>El servicio de autenticación no está disponible. Inténtalo más tarde.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.slug_conflict" datatype="html">
+        <source>No se pudo generar la dirección de tu boda. Inténtalo de nuevo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.network" datatype="html">
+        <source>No se pudo conectar con el servidor. Comprueba tu conexión.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.unknown" datatype="html">
+        <source>Ha ocurrido un error inesperado. Inténtalo de nuevo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.field.required" datatype="html">
+        <source>Este campo es obligatorio.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.field.tooLong" datatype="html">
+        <source>El texto es demasiado largo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="errors.field.invalid" datatype="html">
+        <source>El valor no es válido.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.title" datatype="html">
+        <source>Tu espacio</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">26,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.signedInAs" datatype="html">
+        <source> Has iniciado sesión como <x id="INTERPOLATION" equiv-text="{{ authService.currentUser()?.email }}"/>. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.intro" datatype="html">
+        <source> Desde aquí podrás gestionar tu evento. Esta sección se irá construyendo en los siguientes pasos. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">31,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.dashboard.loading" datatype="html">
+        <source>Cargando tu boda…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">36,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.dashboard.retry" datatype="html">
+        <source> Reintentar </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">65,67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="dashboard.backToAccount" datatype="html">
+        <source>Volver a mi cuenta</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
+          <context context-type="linenumber">69,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.create.title" datatype="html">
+        <source>Crea vuestra boda</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
+          <context context-type="linenumber">21,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.create.partnerOne.label" datatype="html">
+        <source>Nombre de la primera persona</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
+          <context context-type="linenumber">24,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.create.partnerTwo.label" datatype="html">
+        <source>Nombre de la segunda persona</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
+          <context context-type="linenumber">32,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.create.date.label" datatype="html">
+        <source>Fecha de la boda (opcional)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
+          <context context-type="linenumber">40,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.create.saving" datatype="html">
+        <source>Creando…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
+          <context context-type="linenumber">53,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.create.submit" datatype="html">
+        <source>Crear boda</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
+          <context context-type="linenumber">55,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.create.name.tooLong" datatype="html">
+        <source>El nombre es demasiado largo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
+          <context context-type="linenumber">134</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.create.name.required" datatype="html">
+        <source>Escribe un nombre.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.delete.title" datatype="html">
+        <source>¿Eliminar vuestra boda?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-delete-confirm.component.ts</context>
+          <context context-type="linenumber">12,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.delete.warning" datatype="html">
+        <source> Se borrará vuestra boda definitivamente. No se puede deshacer. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-delete-confirm.component.ts</context>
+          <context context-type="linenumber">14,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.delete.cancel" datatype="html">
+        <source> Cancelar </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-delete-confirm.component.ts</context>
+          <context context-type="linenumber">27,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.delete.deleting" datatype="html">
+        <source>Eliminando…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-delete-confirm.component.ts</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.delete.confirm" datatype="html">
+        <source>Sí, eliminar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-delete-confirm.component.ts</context>
+          <context context-type="linenumber">33,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.title" datatype="html">
+        <source>Editar la boda</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">33,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.title.label" datatype="html">
+        <source>Título</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">35,36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.title.hint" datatype="html">
+        <source> Si lo dejas vacío, se usarán vuestros nombres </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">38,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.partnerOne.label" datatype="html">
+        <source>Nombre de la primera persona</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">45,47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.partnerTwo.label" datatype="html">
+        <source>Nombre de la segunda persona</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">53,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.date.label" datatype="html">
+        <source>Fecha de la boda (opcional)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">61,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.time.label" datatype="html">
+        <source>Hora de inicio (opcional)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.saving" datatype="html">
+        <source>Guardando…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">82,83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.submit" datatype="html">
+        <source>Guardar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">84,86</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.cancel" datatype="html">
+        <source>Cancelar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">88,89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.title.tooLong" datatype="html">
+        <source>El título es demasiado largo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">186</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.name.tooLong" datatype="html">
+        <source>El nombre es demasiado largo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">187</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.name.required" datatype="html">
+        <source>Escribe un nombre.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">189</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.summary.dateTbd" datatype="html">
+        <source>Fecha por decidir</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
+          <context context-type="linenumber">17,18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.summary.status.published" datatype="html">
+        <source>Publicado</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
+          <context context-type="linenumber">23,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.summary.status.draft" datatype="html">
+        <source>Borrador</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
+          <context context-type="linenumber">25,28</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.summary.edit" datatype="html">
+        <source>Editar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
+          <context context-type="linenumber">28,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.summary.delete" datatype="html">
+        <source> Eliminar boda </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
+          <context context-type="linenumber">30,32</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
