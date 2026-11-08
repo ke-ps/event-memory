@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from pydantic import ValidationError
@@ -8,11 +9,10 @@ from app.core.errors import AppError
 from app.models.event import Event
 from app.repositories import events as event_repository
 from app.schemas.event_details import UnknownEventTypeError, validate_event_details
-from app.schemas.events import EventCreate, EventUpdate
+from app.schemas.events import SLUG_MAX_LENGTH, SLUG_PATTERN, EventCreate, EventUpdate
 from app.services.slugs import slugify
 
 TITLE_MAX_LENGTH = 150
-SLUG_MAX_LENGTH = 80
 MAX_SLUG_ATTEMPTS = 5
 SLUG_CONSTRAINT = "uq_events_slug"
 
@@ -119,10 +119,17 @@ def get_own_event(session: Session, owner_uid: str) -> Event:
 
 
 def get_published_event(session: Session, slug: str) -> Event:
-    event = event_repository.get_by_slug(session, slug.lower())
+    slug = slug.lower()
+    if len(slug) > SLUG_MAX_LENGTH or not re.fullmatch(SLUG_PATTERN, slug):
+        raise _public_event_not_found()
+    event = event_repository.get_by_slug(session, slug)
     if event is None or event.status != "published":
-        raise AppError(404, "event_not_found", "No existe ningún evento con esa dirección.")
+        raise _public_event_not_found()
     return event
+
+
+def _public_event_not_found() -> AppError:
+    return AppError(404, "event_not_found", "No existe ningún evento con esa dirección.")
 
 
 def update_own_event(session: Session, owner_uid: str, data: EventUpdate) -> Event:

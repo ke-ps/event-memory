@@ -6,42 +6,42 @@
         <source>Conexión con el backend</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">26,27</context>
+          <context context-type="linenumber">27,28</context>
         </context-group>
       </trans-unit>
       <trans-unit id="connection.checking" datatype="html">
         <source>Comprobando la conexión…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">29,30</context>
+          <context context-type="linenumber">30,31</context>
         </context-group>
       </trans-unit>
       <trans-unit id="connection.connected" datatype="html">
         <source>Backend conectado correctamente.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">32,34</context>
+          <context context-type="linenumber">33,35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="connection.unavailable" datatype="html">
         <source> No se pudo conectar con el backend. Comprueba que esté en marcha y vuelve a intentarlo. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">36,38</context>
+          <context context-type="linenumber">37,39</context>
         </context-group>
       </trans-unit>
       <trans-unit id="connection.checkingShort" datatype="html">
         <source>Comprobando…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">47,48</context>
+          <context context-type="linenumber">48,50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="connection.retry" datatype="html">
         <source>Comprobar de nuevo</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">49,50</context>
+          <context context-type="linenumber">50,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="auth.greeting" datatype="html">
@@ -325,7 +325,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="errors.field.event_date_required" datatype="html">
-        <source>Añade la fecha para poder publicar.</source>
+        <source>Una boda publicada necesita fecha.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/api-error-messages.ts</context>
           <context context-type="linenumber">51</context>

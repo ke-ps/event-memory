@@ -48,7 +48,7 @@ function fieldMessage(code: string): string {
     case 'slug_locked':
       return $localize`:@@errors.field.slug_locked:Para cambiar la dirección, despublica la boda.`;
     case 'event_date_required':
-      return $localize`:@@errors.field.event_date_required:Añade la fecha para poder publicar.`;
+      return $localize`:@@errors.field.event_date_required:Una boda publicada necesita fecha.`;
     case 'string_pattern_mismatch':
       return $localize`:@@errors.field.slug_pattern:Usa solo minúsculas, números y guiones.`;
     default:

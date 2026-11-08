@@ -82,12 +82,15 @@ export class PublicEventPageComponent {
   }
 
   async load(): Promise<void> {
+    const slug = this.slug;
     this.state.set('loading');
     try {
-      const event = await this.api.get(this.slug);
+      const event = await this.api.get(slug);
+      if (slug !== this.slug) return;
       this.event.set(event);
       this.state.set(event ? 'ready' : 'unavailable');
     } catch (error) {
+      if (slug !== this.slug) return;
       this.errorMessage.set(apiErrorMessage(error));
       this.state.set('error');
     }

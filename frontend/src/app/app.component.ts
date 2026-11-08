@@ -3,6 +3,7 @@ import {
   Component,
   effect,
   inject,
+  computed,
   signal,
   untracked,
 } from '@angular/core';
@@ -105,10 +106,10 @@ export class AppComponent {
   private readonly router = inject(Router);
   private readonly currentUrl = signal<string | null>(null);
   readonly backendStatus = signal<BackendStatus>('checking');
-  readonly showConnection = () => {
+  readonly showConnection = computed(() => {
     const url = this.currentUrl();
     return url !== null && !url.startsWith('/e/');
-  };
+  });
 
   constructor() {
     this.router.events

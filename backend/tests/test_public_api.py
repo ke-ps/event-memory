@@ -1,5 +1,6 @@
 from collections.abc import Callable
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.api.dependencies import get_current_user
@@ -100,3 +101,24 @@ def test_public_event_needs_no_token(client: TestClient, as_user: AsUser) -> Non
     response = client.get(f"{PUBLIC_URL}/{SLUG}")
 
     assert response.status_code == 200
+
+
+@pytest.mark.parametrize("slug", ["%00", "a%00b", "a" * 81, "ñu"])
+def test_public_event_invalid_slug_is_plain_404(client: TestClient, slug: str) -> None:
+    unknown = client.get(f"{PUBLIC_URL}/does-not-exist")
+
+    response = client.get(f"{PUBLIC_URL}/{slug}")
+
+    assert response.status_code == 404
+    assert response.json() == unknown.json()
+
+
+def test_public_event_draft_404_matches_unknown_slug(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    create_event(client)
+    unknown = client.get(f"{PUBLIC_URL}/does-not-exist")
+
+    response = client.get(f"{PUBLIC_URL}/{SLUG}")
+
+    assert response.status_code == 404
+    assert response.json() == unknown.json()

@@ -83,4 +83,26 @@ describe('PublicEventPageComponent', () => {
 
     expect(get).toHaveBeenLastCalledWith('otra-boda');
   });
+
+  it('ignores a stale response after the slug changes', async () => {
+    let resolveA!: (event: PublicEvent) => void;
+    const eventB = { ...publicEvent, title: 'Boda B', slug: 'b' };
+    const { fixture, get, params } = await setup(
+      () =>
+        new Promise<PublicEvent>((resolve) => {
+          resolveA = resolve;
+        }),
+    );
+
+    get.mockResolvedValueOnce(eventB);
+    params.next(convertToParamMap({ slug: 'b' }));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    resolveA({ ...publicEvent, title: 'Boda A', slug: 'a' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(text(fixture)).toContain('Boda B');
+    expect(text(fixture)).not.toContain('Boda A');
+  });
 });

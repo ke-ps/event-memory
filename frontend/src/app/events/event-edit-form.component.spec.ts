@@ -162,7 +162,7 @@ describe('EventEditFormComponent', () => {
     fixture.detectChanges();
 
     expect(element.querySelector('#edit-event-date-error')?.textContent).toContain(
-      'Añade la fecha para poder publicar.',
+      'Una boda publicada necesita fecha.',
     );
     expect(element.querySelector('[role="alert"]')).toBeNull();
   });
