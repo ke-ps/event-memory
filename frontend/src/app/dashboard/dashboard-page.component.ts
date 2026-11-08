@@ -42,6 +42,7 @@ import { AuthService } from '../services/auth.service';
           @if (event(); as currentEvent) {
             <app-event-summary
               [event]="currentEvent"
+              (changed)="event.set($event)"
               (edit)="state.set('editing')"
               (remove)="state.set('confirmingDelete')"
             />
