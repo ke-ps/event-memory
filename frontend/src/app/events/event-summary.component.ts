@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
 import { EventRead } from './event.models';
+import { eventTimeSuffix } from './event-time';
 
 @Component({
   selector: 'app-event-summary',
@@ -47,8 +48,5 @@ export class EventSummaryComponent {
   readonly event = input.required<EventRead>();
   readonly edit = output<void>();
   readonly remove = output<void>();
-  readonly timeSuffix = computed(() => {
-    const time = this.event().start_time;
-    return time ? `, ${time.slice(0, 5)}` : '';
-  });
+  readonly timeSuffix = computed(() => eventTimeSuffix(this.event().start_time));
 }
