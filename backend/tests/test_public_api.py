@@ -122,3 +122,22 @@ def test_public_event_draft_404_matches_unknown_slug(client: TestClient, as_user
 
     assert response.status_code == 404
     assert response.json() == unknown.json()
+
+
+def test_public_event_exposes_location_time(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    create_event(client)
+    place = {
+        "label": "Ceremonia",
+        "venue_name": "Iglesia",
+        "address": "Calle Mayor 1",
+        "start_time": "17:00:00",
+    }
+    saved = client.put(f"{EVENTS_URL}/me/locations", json={"locations": [place]})
+    assert saved.status_code == 200
+    publish(client)
+
+    location = client.get(f"{PUBLIC_URL}/{SLUG}").json()["locations"][0]
+
+    assert set(location) == {"label", "venue_name", "address", "position", "start_time"}
+    assert location["start_time"] == "17:00:00"

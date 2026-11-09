@@ -7,9 +7,16 @@ from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
 from app.models.event import Event
+from app.models.event_location import EventLocation
 from app.repositories import events as event_repository
 from app.schemas.event_details import UnknownEventTypeError, validate_event_details
-from app.schemas.events import SLUG_MAX_LENGTH, SLUG_PATTERN, EventCreate, EventUpdate
+from app.schemas.events import (
+    SLUG_MAX_LENGTH,
+    SLUG_PATTERN,
+    EventCreate,
+    EventLocationsUpdate,
+    EventUpdate,
+)
 from app.services.slugs import slugify
 
 TITLE_MAX_LENGTH = 150
@@ -160,6 +167,27 @@ def update_own_event(session: Session, owner_uid: str, data: EventUpdate) -> Eve
         if _is_slug_conflict(exc):
             raise _slug_taken() from None
         raise
+    except Exception:
+        session.rollback()
+        raise
+    return event
+
+
+def update_own_event_locations(
+    session: Session, owner_uid: str, data: EventLocationsUpdate
+) -> Event:
+    event = get_own_event(session, owner_uid)
+    try:
+        event_repository.replace_locations(
+            session,
+            event,
+            [
+                EventLocation(position=index, **location.model_dump())
+                for index, location in enumerate(data.locations)
+            ],
+        )
+        session.commit()
+        session.refresh(event)
     except Exception:
         session.rollback()
         raise
