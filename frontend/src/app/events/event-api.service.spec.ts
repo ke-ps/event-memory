@@ -6,7 +6,12 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
 import { EventApiService } from './event-api.service';
-import { EventCreateRequest, EventRead, EventUpdateRequest } from './event.models';
+import {
+  EventCreateRequest,
+  EventLocationsUpdateRequest,
+  EventRead,
+  EventUpdateRequest,
+} from './event.models';
 
 const eventRead: EventRead = {
   id: 'id-1',
@@ -76,6 +81,31 @@ describe('EventApiService', () => {
 
     const request = await vi.waitFor(() =>
       httpTesting.expectOne(`${environment.apiBaseUrl}/events/me`),
+    );
+    expect(request.request.method).toBe('PUT');
+    expect(request.request.body).toEqual(body);
+    expect(request.request.headers.get('Authorization')).toBe('Bearer tok');
+    request.flush(eventRead);
+
+    await expect(result).resolves.toEqual(eventRead);
+  });
+
+  it('puts the locations to /events/me/locations with the Bearer token', async () => {
+    const body: EventLocationsUpdateRequest = {
+      locations: [
+        {
+          label: 'Ceremonia',
+          venue_name: 'Iglesia',
+          address: 'Calle Mayor 1',
+          start_time: '17:00',
+        },
+      ],
+    };
+
+    const result = service.updateLocations(body);
+
+    const request = await vi.waitFor(() =>
+      httpTesting.expectOne(`${environment.apiBaseUrl}/events/me/locations`),
     );
     expect(request.request.method).toBe('PUT');
     expect(request.request.body).toEqual(body);
