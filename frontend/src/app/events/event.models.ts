@@ -1,6 +1,8 @@
 export interface WeddingDetails {
   partner_one_name: string;
   partner_two_name: string;
+  welcome_text?: string | null;
+  story?: string | null;
 }
 
 export interface EventLocation {

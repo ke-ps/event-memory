@@ -20,15 +20,22 @@ const currentEvent: EventRead = {
   updated_at: '2026-11-05T10:00:00Z',
 };
 
-function setup(update = vi.fn((): Promise<EventRead> => Promise.resolve(currentEvent))) {
+function setup(
+  update = vi.fn((): Promise<EventRead> => Promise.resolve(currentEvent)),
+  event: EventRead = currentEvent,
+) {
   TestBed.configureTestingModule({
     providers: [{ provide: EventApiService, useValue: { update } }],
   });
   const fixture = TestBed.createComponent(EventEditFormComponent);
-  fixture.componentRef.setInput('event', currentEvent);
+  fixture.componentRef.setInput('event', event);
   fixture.detectChanges();
   const element = fixture.nativeElement as HTMLElement;
   return { fixture, element, update, component: fixture.componentInstance };
+}
+
+function setupWithDetails(texts: Partial<EventRead['details']>) {
+  return setup(undefined, { ...currentEvent, details: { ...currentEvent.details, ...texts } });
 }
 
 function fill(element: HTMLElement, id: string, value: string) {
@@ -182,7 +189,12 @@ describe('EventEditFormComponent', () => {
     expect(update).toHaveBeenCalledWith({
       title: 'Nuestra boda',
       slug: 'ana-y-luis',
-      details: { partner_one_name: 'Ana María', partner_two_name: 'Luis' },
+      details: {
+        partner_one_name: 'Ana María',
+        partner_two_name: 'Luis',
+        welcome_text: null,
+        story: null,
+      },
       event_date: '2027-06-12',
       start_time: '18:30',
     });
@@ -201,7 +213,12 @@ describe('EventEditFormComponent', () => {
     expect(update).toHaveBeenCalledWith({
       title: null,
       slug: 'ana-y-luis',
-      details: { partner_one_name: 'Ana', partner_two_name: 'Luis' },
+      details: {
+        partner_one_name: 'Ana',
+        partner_two_name: 'Luis',
+        welcome_text: null,
+        story: null,
+      },
       event_date: null,
       start_time: null,
     });
@@ -278,5 +295,82 @@ describe('EventEditFormComponent', () => {
 
     expect(cancelled).toBe(1);
     expect(update).not.toHaveBeenCalled();
+  });
+
+  it('prefills the texts', () => {
+    const { element } = setupWithDetails({ welcome_text: 'Hola', story: 'Nuestra historia' });
+
+    expect(value(element, 'edit-welcome-text')).toBe('Hola');
+    expect(value(element, 'edit-story')).toBe('Nuestra historia');
+  });
+
+  it('sends the texts trimmed', async () => {
+    const { fixture, element, update, component } = setup();
+
+    fill(element, 'edit-welcome-text', '  Hola  ');
+    fill(element, 'edit-story', 'Línea 1\nLínea 2 ');
+    fixture.detectChanges();
+    await component.submit();
+
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        details: expect.objectContaining({
+          welcome_text: 'Hola',
+          story: 'Línea 1\nLínea 2',
+        }) as unknown,
+      }),
+    );
+  });
+
+  it('sends null for empty texts', async () => {
+    const { fixture, element, update, component } = setupWithDetails({ welcome_text: 'Hola' });
+
+    fill(element, 'edit-welcome-text', '   ');
+    fixture.detectChanges();
+    await component.submit();
+
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        details: expect.objectContaining({ welcome_text: null, story: null }) as unknown,
+      }),
+    );
+  });
+
+  it.each([
+    ['edit-welcome-text', 501],
+    ['edit-story', 2001],
+  ])('does not submit a %s over its limit', async (id, length) => {
+    const { fixture, element, update, component } = setup();
+    const textarea = element.querySelector<HTMLTextAreaElement>('#' + id)!;
+
+    fill(element, id, 'x'.repeat(length));
+    textarea.dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+    await component.submit();
+    fixture.detectChanges();
+
+    expect(update).not.toHaveBeenCalled();
+    expect(element.querySelector('#' + id + '-error')?.textContent).toContain(
+      'El texto es demasiado largo.',
+    );
+  });
+
+  it('shows a server error under its text field', async () => {
+    const error = new HttpErrorResponse({
+      status: 422,
+      error: {
+        code: 'validation_error',
+        errors: [{ field: 'details.story', code: 'string_too_long' }],
+      },
+    });
+    const { fixture, element, component } = setup(vi.fn(() => Promise.reject(error)));
+
+    await component.submit();
+    fixture.detectChanges();
+
+    expect(element.querySelector('#edit-story-error')?.textContent).toContain(
+      'El texto es demasiado largo.',
+    );
+    expect(element.querySelector('[role="alert"]')).toBeNull();
   });
 });

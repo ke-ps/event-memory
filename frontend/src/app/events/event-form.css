@@ -14,7 +14,8 @@ label {
   margin-top: 0.5rem;
   font-weight: 600;
 }
-input {
+input,
+textarea {
   box-sizing: border-box;
   width: 100%;
   padding: 0.75rem;

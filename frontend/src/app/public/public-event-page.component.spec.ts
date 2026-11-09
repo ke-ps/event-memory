@@ -142,4 +142,38 @@ describe('PublicEventPageComponent', () => {
       (fixture.nativeElement as HTMLElement).querySelector('app-event-location-list'),
     ).toBeNull();
   });
+
+  function withTexts(texts: Partial<PublicEvent['details']>) {
+    return setup(() =>
+      Promise.resolve({ ...publicEvent, details: { ...publicEvent.details, ...texts } }),
+    );
+  }
+
+  it('shows the welcome text and the story', async () => {
+    const { fixture } = await withTexts({ welcome_text: 'Bienvenidos', story: 'Nos conocimos' });
+
+    expect(text(fixture)).toContain('Bienvenidos');
+    expect(text(fixture)).toContain('Nos conocimos');
+  });
+
+  it('shows no text blocks without texts', async () => {
+    const { fixture } = await setup(() => Promise.resolve(publicEvent));
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('.free-text')).toBeNull();
+  });
+
+  it('keeps the line breaks of a text', async () => {
+    const { fixture } = await withTexts({ story: 'Línea 1\nLínea 2' });
+
+    const story = (fixture.nativeElement as HTMLElement).querySelector('.free-text');
+    expect(story?.textContent).toBe('Línea 1\nLínea 2');
+  });
+
+  it('never renders a text as HTML', async () => {
+    const { fixture } = await withTexts({ welcome_text: '<img src=x onerror=alert(1)>' });
+
+    const root = fixture.nativeElement as HTMLElement;
+    expect(root.querySelector('.free-text img')).toBeNull();
+    expect(root.querySelector('.free-text')?.textContent).toBe('<img src=x onerror=alert(1)>');
+  });
 });

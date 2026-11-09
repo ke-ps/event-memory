@@ -161,7 +161,9 @@ En el MVP los módulos son secciones de información que el organizador activa y
 * [x] Publicar y despublicar el evento.
 * [ ] Primera plantilla de boda (diseño a partir del prompt de diseño del propietario del proyecto).
 * [x] Información, fecha y ubicación con enlace al mapa.
-* [ ] Configurar Supabase Storage y subir la foto principal.
+* [x] Textos de bienvenida e historia de la pareja.
+* [ ] Configurar Supabase Storage y subir la foto de fondo de la página (una sola foto por boda).
+* [ ] Asistente de IA que propone los textos; la pareja siempre los revisa y edita antes de guardarlos.
 * [ ] Diseño responsive.
 
 **Terminado cuando:** un evento publicado se ve correctamente en móvil y escritorio a través de su URL, y un borrador no es accesible públicamente.
