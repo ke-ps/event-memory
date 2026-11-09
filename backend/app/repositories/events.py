@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.event import Event
+from app.models.event_location import EventLocation
 
 
 def get_by_owner(session: Session, owner_uid: str) -> Event | None:
@@ -24,4 +25,9 @@ def add(session: Session, event: Event) -> Event:
 
 def delete(session: Session, event: Event) -> None:
     session.delete(event)
+    session.flush()
+
+
+def replace_locations(session: Session, event: Event, locations: list[EventLocation]) -> None:
+    event.locations = locations
     session.flush()

@@ -2,10 +2,14 @@ from datetime import date, datetime, time
 from typing import Annotated, Any
 from uuid import UUID
 
-from pydantic import BaseModel, BeforeValidator, ConfigDict, StringConstraints
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, StringConstraints
 
 SLUG_PATTERN = r"^[a-z0-9]+(-[a-z0-9]+)*$"
 SLUG_MAX_LENGTH = 80
+MAX_LOCATIONS = 10
+
+
+RequiredText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
 def _normalize_slug(value: object) -> object:
@@ -35,14 +39,33 @@ class EventUpdate(BaseModel):
     start_time: time | None
 
 
-class LocationRead(BaseModel):
+class LocationWrite(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    label: Annotated[RequiredText, Field(max_length=60)]
+    venue_name: Annotated[RequiredText, Field(max_length=150)]
+    address: Annotated[RequiredText, Field(max_length=300)]
+    start_time: time | None
+
+
+class EventLocationsUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    locations: list[LocationWrite] = Field(max_length=MAX_LOCATIONS)
+
+
+class PublicLocationRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: UUID
     label: str
     venue_name: str
     address: str
+    start_time: time | None
     position: int
+
+
+class LocationRead(PublicLocationRead):
+    id: UUID
 
 
 class EventRead(BaseModel):
@@ -60,15 +83,6 @@ class EventRead(BaseModel):
     locations: list[LocationRead]
     created_at: datetime
     updated_at: datetime
-
-
-class PublicLocationRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    label: str
-    venue_name: str
-    address: str
-    position: int
 
 
 class PublicEventRead(BaseModel):

@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, time
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, ForeignKey, SmallInteger, String, Uuid, func
+from sqlalchemy import DateTime, ForeignKey, SmallInteger, String, Time, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -21,6 +21,7 @@ class EventLocation(Base):
     label: Mapped[str] = mapped_column(String(60), nullable=False)
     venue_name: Mapped[str] = mapped_column(String(150), nullable=False)
     address: Mapped[str] = mapped_column(String(300), nullable=False)
+    start_time: Mapped[time | None] = mapped_column(Time, nullable=True)
     position: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()

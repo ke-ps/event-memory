@@ -9,9 +9,19 @@ import { EventDeleteConfirmComponent } from '../events/event-delete-confirm.comp
 import { EventPublicationComponent } from '../events/event-publication.component';
 import { EventEditFormComponent } from '../events/event-edit-form.component';
 import { EventCreateFormComponent } from '../events/event-create-form.component';
+import { EventLocationsFormComponent } from '../events/event-locations-form.component';
 import { EventRead } from '../events/event.models';
 import { AuthService } from '../services/auth.service';
 import { DashboardPageComponent } from './dashboard-page.component';
+
+const place = {
+  id: 'loc-1',
+  label: 'Ceremonia',
+  venue_name: 'Iglesia Mayor',
+  address: 'Calle Sol 1',
+  position: 0,
+  start_time: null,
+};
 
 const event: EventRead = {
   id: 'event-1',
@@ -40,6 +50,7 @@ async function setup(getMine: () => Promise<EventRead | null>) {
           getMine: getMineMock,
           create: vi.fn(),
           update: vi.fn(),
+          updateLocations: vi.fn(),
           deleteMine: vi.fn(),
           publish: vi.fn(),
           unpublish: vi.fn(),
@@ -203,7 +214,72 @@ describe('DashboardPageComponent', () => {
 
     expect(text(fixture)).toContain('Publicada');
   });
+
+  it('shows the empty message without locations', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+
+    expect(text(fixture)).toContain('Todavía no habéis añadido lugares');
+    expect(buttonLabels(fixture)).toContain('Añadir lugares');
+  });
+
+  it('lists the places with their map link', async () => {
+    const { fixture } = await setup(() => Promise.resolve({ ...event, locations: [place] }));
+    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
+      'app-event-location-list a',
+    );
+
+    expect(text(fixture)).toContain('Iglesia Mayor');
+    expect(link?.href).toContain('google.com/maps');
+    expect(buttonLabels(fixture)).toContain('Editar lugares');
+  });
+
+  it('opens the locations form', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+    const root = fixture.nativeElement as HTMLElement;
+
+    clickButton(fixture, 'Añadir lugares');
+
+    expect(root.querySelector('app-event-locations-form')).not.toBeNull();
+    expect(root.querySelector('app-event-summary')).toBeNull();
+  });
+
+  it('returns to the summary with the saved places', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+    clickButton(fixture, 'Añadir lugares');
+
+    locationsForm(fixture).saved.emit({ ...event, locations: [place] });
+    fixture.detectChanges();
+
+    expect(text(fixture)).toContain('Iglesia Mayor');
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('app-event-locations-form'),
+    ).toBeNull();
+  });
+
+  it('returns to the summary when the locations form is cancelled', async () => {
+    const { fixture } = await setup(() => Promise.resolve(event));
+    clickButton(fixture, 'Añadir lugares');
+
+    locationsForm(fixture).cancelled.emit();
+    fixture.detectChanges();
+
+    expect(text(fixture)).toContain('Todavía no habéis añadido lugares');
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('app-event-locations-form'),
+    ).toBeNull();
+  });
 });
+
+function buttonLabels(fixture: ComponentFixture<DashboardPageComponent>): string[] {
+  return Array.from(
+    (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button'),
+  ).map((b) => b.textContent?.trim() ?? '');
+}
+
+function locationsForm(fixture: ComponentFixture<DashboardPageComponent>) {
+  return fixture.debugElement.query(By.directive(EventLocationsFormComponent))
+    .componentInstance as EventLocationsFormComponent;
+}
 
 function clickButton(fixture: ComponentFixture<DashboardPageComponent>, label: string): void {
   const button = Array.from(

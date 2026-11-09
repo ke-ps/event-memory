@@ -58,50 +58,7 @@ const API_FIELDS = {
       </form>
     </section>
   `,
-  styles: `
-    :host {
-      display: block;
-    }
-    h2 {
-      font-family: Georgia, serif;
-      font-size: 1.5rem;
-      font-weight: 400;
-    }
-    form {
-      display: grid;
-      gap: 0.65rem;
-    }
-    label {
-      margin-top: 0.5rem;
-      font-weight: 600;
-    }
-    input {
-      box-sizing: border-box;
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #b9ada5;
-      border-radius: 6px;
-      font: inherit;
-    }
-    button {
-      padding: 0.75rem 1rem;
-      border: 0;
-      border-radius: 6px;
-      background: #8b5e52;
-      color: white;
-      cursor: pointer;
-      font: inherit;
-    }
-    button:disabled {
-      cursor: wait;
-      opacity: 0.6;
-    }
-    .field-error {
-      margin: 0;
-      color: #a12d2d;
-      font-size: 0.9rem;
-    }
-  `,
+  styleUrl: './event-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventCreateFormComponent {

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.core.errors import AppError
 from app.models.event import Event
 from app.models.event_location import EventLocation
-from app.schemas.events import EventCreate, EventUpdate
+from app.schemas.events import EventCreate, EventLocationsUpdate, EventUpdate, LocationWrite
 from app.services.events import (
     create_event,
     delete_own_event,
@@ -16,6 +16,7 @@ from app.services.events import (
     publish_own_event,
     unpublish_own_event,
     update_own_event,
+    update_own_event_locations,
 )
 
 
@@ -452,3 +453,132 @@ def test_publish_and_unpublish_without_event(db_session: Session) -> None:
             action(db_session, "uid-x")
         assert exc_info.value.status_code == 404
         assert exc_info.value.code == "event_not_found"
+
+
+def place(label: str = "Ceremonia", start_time: time | None = time(17, 0)) -> LocationWrite:
+    return LocationWrite(
+        label=label, venue_name="Iglesia", address="Calle Mayor 1", start_time=start_time
+    )
+
+
+def saved_locations(db_session: Session, uid: str) -> list[EventLocation]:
+    event = get_own_event(db_session, uid)
+    return list(
+        db_session.scalars(
+            select(EventLocation)
+            .where(EventLocation.event_id == event.id)
+            .order_by(EventLocation.position)
+        )
+    )
+
+
+def test_update_locations_saves_them(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event_locations(
+        db_session,
+        "uid-a",
+        EventLocationsUpdate(locations=[place(), place("Banquete", time(20, 30))]),
+    )
+
+    assert [(loc.label, loc.venue_name, loc.address) for loc in event.locations] == [
+        ("Ceremonia", "Iglesia", "Calle Mayor 1"),
+        ("Banquete", "Iglesia", "Calle Mayor 1"),
+    ]
+    assert [loc.start_time for loc in event.locations] == [time(17, 0), time(20, 30)]
+
+
+def test_update_locations_replaces_previous(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event_locations(
+        db_session, "uid-a", EventLocationsUpdate(locations=[place("A"), place("B")])
+    )
+
+    update_own_event_locations(db_session, "uid-a", EventLocationsUpdate(locations=[place("C")]))
+
+    assert [loc.label for loc in saved_locations(db_session, "uid-a")] == ["C"]
+    assert db_session.scalar(select(func.count()).select_from(EventLocation)) == 1
+
+
+def test_update_locations_keeps_list_order(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event_locations(
+        db_session,
+        "uid-a",
+        EventLocationsUpdate(locations=[place("C"), place("A"), place("B")]),
+    )
+
+    assert [(loc.position, loc.label) for loc in event.locations] == [
+        (0, "C"),
+        (1, "A"),
+        (2, "B"),
+    ]
+
+
+def test_update_locations_empty_list(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    update_own_event_locations(db_session, "uid-a", EventLocationsUpdate(locations=[place()]))
+
+    event = update_own_event_locations(db_session, "uid-a", EventLocationsUpdate(locations=[]))
+
+    assert event.locations == []
+    assert saved_locations(db_session, "uid-a") == []
+
+
+def test_update_locations_optional_time(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event_locations(
+        db_session, "uid-a", EventLocationsUpdate(locations=[place(start_time=None)])
+    )
+
+    assert event.locations[0].start_time is None
+
+
+def test_update_locations_without_event(db_session: Session) -> None:
+    with pytest.raises(AppError) as exc_info:
+        update_own_event_locations(db_session, "uid-a", EventLocationsUpdate(locations=[]))
+
+    assert exc_info.value.status_code == 404
+    assert exc_info.value.code == "event_not_found"
+
+
+def test_update_locations_does_not_touch_others(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    create_event(db_session, "uid-b", wedding("Eva", "Pau"))
+    update_own_event_locations(db_session, "uid-b", EventLocationsUpdate(locations=[place("B")]))
+
+    update_own_event_locations(db_session, "uid-a", EventLocationsUpdate(locations=[place("A")]))
+
+    assert [loc.label for loc in saved_locations(db_session, "uid-b")] == ["B"]
+
+
+def test_update_locations_while_published(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+    get_own_event(db_session, "uid-a").event_date = date(2027, 6, 12)
+    publish_own_event(db_session, "uid-a")
+
+    event = update_own_event_locations(
+        db_session, "uid-a", EventLocationsUpdate(locations=[place()])
+    )
+
+    assert event.status == "published"
+    assert len(event.locations) == 1
+
+
+LOCATION_TEXT = {"label": "A", "venue_name": "B", "address": "C"}
+
+
+@pytest.mark.parametrize("field", ["label", "venue_name", "address"])
+def test_location_rejects_blank_fields(field: str) -> None:
+    with pytest.raises(ValidationError):
+        LocationWrite(**{**LOCATION_TEXT, field: "   "}, start_time=None)
+
+
+@pytest.mark.parametrize(
+    ("field", "length"), [("label", 61), ("venue_name", 151), ("address", 301)]
+)
+def test_location_rejects_too_long_fields(field: str, length: int) -> None:
+    with pytest.raises(ValidationError):
+        LocationWrite(**{**LOCATION_TEXT, field: "x" * length}, start_time=None)

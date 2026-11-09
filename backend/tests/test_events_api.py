@@ -343,3 +343,119 @@ def test_publish_without_token_returns_401(client: TestClient) -> None:
 
     assert response.status_code == 401
     assert response.json()["code"] == "missing_token"
+
+
+LOCATIONS_URL = f"{URL}/me/locations"
+
+
+def location(**overrides: object) -> dict[str, object]:
+    body: dict[str, object] = {
+        "label": "Ceremonia",
+        "venue_name": "Iglesia",
+        "address": "Calle Mayor 1",
+        "start_time": "17:00:00",
+    }
+    body.update(overrides)
+    return body
+
+
+def test_update_locations_returns_200(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.put(
+        LOCATIONS_URL,
+        json={"locations": [location(), location(label="Banquete", start_time=None)]},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert [loc["label"] for loc in body["locations"]] == ["Ceremonia", "Banquete"]
+    assert [loc["position"] for loc in body["locations"]] == [0, 1]
+    assert body["locations"][0]["start_time"] == "17:00:00"
+    assert body["locations"][1]["start_time"] is None
+    assert all(loc["id"] for loc in body["locations"])
+    assert "owner_firebase_uid" not in body
+
+
+def test_update_locations_blank_field_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.put(LOCATIONS_URL, json={"locations": [location(label="   ")]})
+
+    assert response.status_code == 422
+    body = response.json()
+    assert body["code"] == "validation_error"
+    assert any(error["field"] == "locations.0.label" for error in body["errors"])
+
+
+def test_update_locations_more_than_10_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.put(LOCATIONS_URL, json={"locations": [location()] * 11})
+
+    assert response.status_code == 422
+    assert any(error["field"] == "locations" for error in response.json()["errors"])
+
+
+def test_update_locations_extra_field_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+
+    response = client.put(LOCATIONS_URL, json={"locations": [location(position=3)]})
+
+    assert response.status_code == 422
+
+
+def test_update_locations_missing_time_returns_422(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+    without_time = location()
+    del without_time["start_time"]
+
+    response = client.put(LOCATIONS_URL, json={"locations": [without_time]})
+
+    assert response.status_code == 422
+    assert any(error["field"] == "locations.0.start_time" for error in response.json()["errors"])
+
+
+def test_rejected_update_keeps_previous_locations(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+    client.put(LOCATIONS_URL, json={"locations": [location()]})
+
+    rejected = client.put(LOCATIONS_URL, json={"locations": [location(address=" ")]})
+
+    assert rejected.status_code == 422
+    kept = client.get(f"{URL}/me").json()["locations"]
+    assert [loc["label"] for loc in kept] == ["Ceremonia"]
+
+
+def test_update_locations_without_event_returns_404(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+
+    response = client.put(LOCATIONS_URL, json={"locations": []})
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "event_not_found"
+
+
+def test_update_locations_without_token_returns_401(client: TestClient) -> None:
+    response = client.put(LOCATIONS_URL, json={"locations": []})
+
+    assert response.status_code == 401
+    assert response.json()["code"] == "missing_token"
+
+
+def test_update_locations_only_touches_own_event(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    client.post(URL, json=payload())
+    as_user("uid-2", None)
+    client.post(URL, json=payload())
+
+    client.put(LOCATIONS_URL, json={"locations": [location()]})
+
+    as_user("uid-1", None)
+    assert client.get(f"{URL}/me").json()["locations"] == []

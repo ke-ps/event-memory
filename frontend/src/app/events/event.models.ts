@@ -9,6 +9,19 @@ export interface EventLocation {
   venue_name: string;
   address: string;
   position: number;
+  start_time: string | null;
+}
+
+/** A place as guests see it: the owner's `id` is not exposed. */
+export type PublicEventLocation = Omit<EventLocation, 'id'>;
+
+export type EventLocationWrite = Pick<
+  EventLocation,
+  'label' | 'venue_name' | 'address' | 'start_time'
+>;
+
+export interface EventLocationsUpdateRequest {
+  locations: EventLocationWrite[];
 }
 
 export interface EventRead {
@@ -48,5 +61,5 @@ export interface PublicEvent {
   start_time: string | null;
   timezone: string;
   details: WeddingDetails;
-  locations: Omit<EventLocation, 'id'>[];
+  locations: PublicEventLocation[];
 }

@@ -6,6 +6,7 @@ import { EventApiService } from '../events/event-api.service';
 import { EventCreateFormComponent } from '../events/event-create-form.component';
 import { EventDeleteConfirmComponent } from '../events/event-delete-confirm.component';
 import { EventEditFormComponent } from '../events/event-edit-form.component';
+import { EventLocationsFormComponent } from '../events/event-locations-form.component';
 import { EventSummaryComponent } from '../events/event-summary.component';
 import { EventRead } from '../events/event.models';
 import { AuthService } from '../services/auth.service';
@@ -18,6 +19,7 @@ import { AuthService } from '../services/auth.service';
     EventCreateFormComponent,
     EventDeleteConfirmComponent,
     EventEditFormComponent,
+    EventLocationsFormComponent,
     EventSummaryComponent,
   ],
   template: `
@@ -36,7 +38,7 @@ import { AuthService } from '../services/auth.service';
           <p role="status" i18n="@@events.dashboard.loading">Cargando tu boda…</p>
         }
         @case ('empty') {
-          <app-event-create-form (created)="onCreated($event)" />
+          <app-event-create-form (created)="showEvent($event)" />
         }
         @case ('ready') {
           @if (event(); as currentEvent) {
@@ -44,6 +46,7 @@ import { AuthService } from '../services/auth.service';
               [event]="currentEvent"
               (changed)="event.set($event)"
               (edit)="state.set('editing')"
+              (editLocations)="state.set('editingLocations')"
               (remove)="state.set('confirmingDelete')"
             />
           }
@@ -55,7 +58,16 @@ import { AuthService } from '../services/auth.service';
           @if (event(); as currentEvent) {
             <app-event-edit-form
               [event]="currentEvent"
-              (saved)="onSaved($event)"
+              (saved)="showEvent($event)"
+              (cancelled)="state.set('ready')"
+            />
+          }
+        }
+        @case ('editingLocations') {
+          @if (event(); as currentEvent) {
+            <app-event-locations-form
+              [event]="currentEvent"
+              (saved)="showEvent($event)"
               (cancelled)="state.set('ready')"
             />
           }
@@ -124,9 +136,9 @@ import { AuthService } from '../services/auth.service';
 export class DashboardPageComponent implements OnInit {
   private readonly eventApi = inject(EventApiService);
   readonly authService = inject(AuthService);
-  readonly state = signal<'loading' | 'empty' | 'ready' | 'editing' | 'confirmingDelete' | 'error'>(
-    'loading',
-  );
+  readonly state = signal<
+    'loading' | 'empty' | 'ready' | 'editing' | 'editingLocations' | 'confirmingDelete' | 'error'
+  >('loading');
   readonly event = signal<EventRead | null>(null);
   readonly errorMessage = signal('');
 
@@ -146,12 +158,7 @@ export class DashboardPageComponent implements OnInit {
     }
   }
 
-  onCreated(event: EventRead): void {
-    this.event.set(event);
-    this.state.set('ready');
-  }
-
-  onSaved(event: EventRead): void {
+  showEvent(event: EventRead): void {
     this.event.set(event);
     this.state.set('ready');
   }

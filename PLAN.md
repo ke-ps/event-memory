@@ -50,6 +50,7 @@ El primer producto es un **MVP para bodas**. La plataforma está pensada para ad
 * La fecha del evento es obligatoria para publicar.
 * Una boda publicada siempre tiene fecha y su URL queda fija; para cambiar la URL hay que despublicarla.
 * La página es abierta: cualquiera con el enlace puede ver la información.
+* Cada lugar tiene etiqueta, nombre, dirección y una hora opcional; una boda admite hasta 10 lugares. Los lugares no son obligatorios para publicar y se pueden cambiar con la boda publicada. El enlace al mapa se genera automáticamente con el nombre del sitio y la dirección.
 * Pendiente de decidir: si se reservan las URLs de bodas publicadas que se borran, para que otra boda no ocupe un enlace ya repartido.
 
 ### Invitados y confirmación de asistencia
@@ -159,7 +160,7 @@ En el MVP los módulos son secciones de información que el organizador activa y
 * [x] URL pública editable y única.
 * [x] Publicar y despublicar el evento.
 * [ ] Primera plantilla de boda (diseño a partir del prompt de diseño del propietario del proyecto).
-* [ ] Información, fecha y ubicación con enlace al mapa.
+* [x] Información, fecha y ubicación con enlace al mapa.
 * [ ] Configurar Supabase Storage y subir la foto principal.
 * [ ] Diseño responsive.
 
