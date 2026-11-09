@@ -105,4 +105,41 @@ describe('PublicEventPageComponent', () => {
     expect(text(fixture)).toContain('Boda B');
     expect(text(fixture)).not.toContain('Boda A');
   });
+
+  it('shows the places in order with their map link', async () => {
+    const locations = [
+      {
+        label: 'Ceremonia',
+        venue_name: 'Iglesia Mayor',
+        address: 'Calle Sol 1',
+        position: 0,
+        start_time: null,
+      },
+      {
+        label: 'Banquete',
+        venue_name: 'Finca Olmo',
+        address: 'Camino 2',
+        position: 1,
+        start_time: null,
+      },
+    ];
+    const { fixture } = await setup(() => Promise.resolve({ ...publicEvent, locations }));
+    const items = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('app-event-location-list li'),
+    );
+
+    expect(items.map((li) => li.querySelector('strong')?.textContent)).toEqual([
+      'Ceremonia',
+      'Banquete',
+    ]);
+    expect(items[0].querySelector('a')?.href).toContain('google.com/maps');
+  });
+
+  it('shows no list without places', async () => {
+    const { fixture } = await setup(() => Promise.resolve(publicEvent));
+
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('app-event-location-list'),
+    ).toBeNull();
+  });
 });

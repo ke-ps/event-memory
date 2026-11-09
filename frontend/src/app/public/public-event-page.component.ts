@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 
 import { apiErrorMessage } from '../core/api-error-messages';
+import { EventLocationListComponent } from '../events/event-location-list.component';
 import { eventTimeSuffix } from '../events/event-time';
 import { PublicEvent } from '../events/event.models';
 import { PublicEventApiService } from './public-event-api.service';
@@ -11,7 +12,7 @@ import { PublicEventApiService } from './public-event-api.service';
 @Component({
   selector: 'app-public-event-page',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, EventLocationListComponent],
   template: `
     <main class="public">
       @switch (state()) {
@@ -29,6 +30,9 @@ import { PublicEventApiService } from './public-event-api.service';
                 >{{ suffix(current) }}
               }
             </p>
+            @if (current.locations.length > 0) {
+              <app-event-location-list [locations]="current.locations" />
+            }
           }
         }
         @case ('unavailable') {

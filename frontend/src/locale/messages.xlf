@@ -34,14 +34,14 @@
         <source>Comprobando…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">48,50</context>
+          <context context-type="linenumber">48,49</context>
         </context-group>
       </trans-unit>
       <trans-unit id="connection.retry" datatype="html">
         <source>Comprobar de nuevo</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.component.ts</context>
-          <context context-type="linenumber">50,52</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="auth.greeting" datatype="html">
@@ -349,42 +349,42 @@
         <source>Tu espacio</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
-          <context context-type="linenumber">26,27</context>
+          <context context-type="linenumber">28,29</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dashboard.signedInAs" datatype="html">
         <source> Has iniciado sesión como <x id="INTERPOLATION" equiv-text="{{ authService.currentUser()?.email }}"/>. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
-          <context context-type="linenumber">28,30</context>
+          <context context-type="linenumber">30,32</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dashboard.intro" datatype="html">
         <source> Desde aquí podrás gestionar tu evento. Esta sección se irá construyendo en los siguientes pasos. </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
-          <context context-type="linenumber">31,33</context>
+          <context context-type="linenumber">33,35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.dashboard.loading" datatype="html">
         <source>Cargando tu boda…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
-          <context context-type="linenumber">36,38</context>
+          <context context-type="linenumber">38,40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.dashboard.retry" datatype="html">
         <source> Reintentar </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
-          <context context-type="linenumber">66,68</context>
+          <context context-type="linenumber">78,80</context>
         </context-group>
       </trans-unit>
       <trans-unit id="dashboard.backToAccount" datatype="html">
         <source>Volver a mi cuenta</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/dashboard/dashboard-page.component.ts</context>
-          <context context-type="linenumber">70,74</context>
+          <context context-type="linenumber">82,86</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.create.title" datatype="html">
@@ -433,14 +433,14 @@
         <source>El nombre es demasiado largo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">134</context>
+          <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.create.name.required" datatype="html">
         <source>Escribe un nombre.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-create-form.component.ts</context>
-          <context context-type="linenumber">136</context>
+          <context context-type="linenumber">93</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.delete.title" datatype="html">
@@ -573,35 +573,158 @@
         <source>Escribe la dirección de tu boda.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">228</context>
+          <context context-type="linenumber">183</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.slug.invalid" datatype="html">
         <source>Usa solo minúsculas, números y guiones (entre 3 y 80 caracteres).</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">229</context>
+          <context context-type="linenumber">184</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.title.tooLong" datatype="html">
         <source>El título es demasiado largo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">233</context>
+          <context context-type="linenumber">188</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.name.tooLong" datatype="html">
         <source>El nombre es demasiado largo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">234</context>
+          <context context-type="linenumber">189</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.name.required" datatype="html">
         <source>Escribe un nombre.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">236</context>
+          <context context-type="linenumber">191</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.map" datatype="html">
+        <source>Ver en el mapa</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-location-list.component.ts</context>
+          <context context-type="linenumber">22,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.title" datatype="html">
+        <source>Lugares de la boda</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">38,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.hint" datatype="html">
+        <source> La hora de cada lugar es opcional. Úsala si la ceremonia y la celebración son a horas distintas </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.row" datatype="html">
+        <source>Lugar <x id="INTERPOLATION" equiv-text="{{ i + 1 }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.label.label" datatype="html">
+        <source>Etiqueta (por ejemplo, Ceremonia)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">50,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.venue.label" datatype="html">
+        <source>Nombre del lugar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">58,60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.address.label" datatype="html">
+        <source>Dirección</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">66,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.time.label" datatype="html">
+        <source>Hora (opcional)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">74,76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.moveUp" datatype="html">
+        <source>Subir</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">83,84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.moveDown" datatype="html">
+        <source>Bajar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">86,87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.remove" datatype="html">
+        <source>Quitar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">89,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.add" datatype="html">
+        <source>Añadir lugar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">100,101</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
+          <context context-type="linenumber">33,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.saving" datatype="html">
+        <source>Guardando…</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">109,111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.submit" datatype="html">
+        <source>Guardar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">111,113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.cancel" datatype="html">
+        <source>Cancelar</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">115,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.tooLong" datatype="html">
+        <source>Este texto es demasiado largo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">204</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.required" datatype="html">
+        <source>Rellena este campo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-locations-form.component.ts</context>
+          <context context-type="linenumber">205</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.publication.published" datatype="html">
@@ -629,7 +752,7 @@
         <source> Despublicar </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-publication.component.ts</context>
-          <context context-type="linenumber">40,43</context>
+          <context context-type="linenumber">40,42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.publication.draft" datatype="html">
@@ -643,7 +766,7 @@
         <source> Publicar </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-publication.component.ts</context>
-          <context context-type="linenumber">55,58</context>
+          <context context-type="linenumber">55,57</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.publication.dateHint" datatype="html">
@@ -671,49 +794,63 @@
         <source>Fecha por decidir</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
-          <context context-type="linenumber">19,20</context>
+          <context context-type="linenumber">20,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.empty" datatype="html">
+        <source>Todavía no habéis añadido lugares</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
+          <context context-type="linenumber">27,29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.locations.edit" datatype="html">
+        <source>Editar lugares</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
+          <context context-type="linenumber">31,33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.summary.edit" datatype="html">
         <source>Editar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
-          <context context-type="linenumber">24,25</context>
+          <context context-type="linenumber">37,38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.summary.delete" datatype="html">
         <source> Eliminar boda </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-summary.component.ts</context>
-          <context context-type="linenumber">26,28</context>
+          <context context-type="linenumber">39,41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="public.loading" datatype="html">
         <source>Cargando…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/public-event-page.component.ts</context>
-          <context context-type="linenumber">19,21</context>
+          <context context-type="linenumber">20,22</context>
         </context-group>
       </trans-unit>
       <trans-unit id="public.dateTbd" datatype="html">
         <source>Fecha por decidir</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/public-event-page.component.ts</context>
-          <context context-type="linenumber">28,29</context>
+          <context context-type="linenumber">29,30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="public.unavailable" datatype="html">
         <source>Esta página no está disponible.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/public-event-page.component.ts</context>
-          <context context-type="linenumber">35,37</context>
+          <context context-type="linenumber">39,41</context>
         </context-group>
       </trans-unit>
       <trans-unit id="public.retry" datatype="html">
         <source> Reintentar </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/public-event-page.component.ts</context>
-          <context context-type="linenumber">40,41</context>
+          <context context-type="linenumber">44,45</context>
         </context-group>
       </trans-unit>
     </body>
