@@ -17,17 +17,50 @@ import { EventLocationWrite, EventRead } from './event.models';
 
 const MAX_LOCATIONS = 10;
 
-/** Form control name -> field name used by the API. */
-const API_FIELDS = {
-  label: 'label',
-  venueName: 'venue_name',
-  address: 'address',
-  startTime: 'start_time',
-} as const;
+/** The inputs of every row: form control, API field, DOM id prefix, input type and label. */
+const LOCATION_FIELDS = [
+  {
+    control: 'label',
+    apiField: 'label',
+    idPrefix: 'location-label',
+    type: 'text',
+    label: $localize`:@@events.locations.label.label:Etiqueta (por ejemplo, Ceremonia)`,
+  },
+  {
+    control: 'venueName',
+    apiField: 'venue_name',
+    idPrefix: 'location-venue',
+    type: 'text',
+    label: $localize`:@@events.locations.venue.label:Nombre del lugar`,
+  },
+  {
+    control: 'address',
+    apiField: 'address',
+    idPrefix: 'location-address',
+    type: 'text',
+    label: $localize`:@@events.locations.address.label:Dirección`,
+  },
+  {
+    control: 'startTime',
+    apiField: 'start_time',
+    idPrefix: 'location-time',
+    type: 'time',
+    label: $localize`:@@events.locations.time.label:Hora (opcional)`,
+  },
+] as const;
 
-type FieldName = keyof typeof API_FIELDS;
+type LocationField = (typeof LOCATION_FIELDS)[number];
 
-const VISIBLE_API_ERROR = /^locations\.\d+\.(label|venue_name|address|start_time)$/;
+/** True for `locations.<row>.<field>` keys, which a row field shows next to its input. */
+function isRowFieldKey(key: string): boolean {
+  // hasVisibleFieldError does not apply: its keys are plain field names, these are indexed by row.
+  const [root, index, apiField] = key.split('.');
+  return (
+    root === 'locations' &&
+    /^\d+$/.test(index) &&
+    LOCATION_FIELDS.some((field) => field.apiField === apiField)
+  );
+}
 
 @Component({
   selector: 'app-event-locations-form',
@@ -46,58 +79,34 @@ const VISIBLE_API_ERROR = /^locations\.\d+\.(label|venue_name|address|start_time
           <fieldset class="location-row" [formGroup]="row">
             <legend i18n="@@events.locations.row">Lugar {{ i + 1 }}</legend>
 
-            <label [for]="'location-label-' + i" i18n="@@events.locations.label.label"
-              >Etiqueta (por ejemplo, Ceremonia)</label
-            >
-            <input [id]="'location-label-' + i" type="text" formControlName="label" />
-            @if (fieldError(i, 'label'); as message) {
-              <p class="field-error" [id]="'location-label-' + i + '-error'">{{ message }}</p>
-            }
-
-            <label [for]="'location-venue-' + i" i18n="@@events.locations.venue.label"
-              >Nombre del lugar</label
-            >
-            <input [id]="'location-venue-' + i" type="text" formControlName="venueName" />
-            @if (fieldError(i, 'venueName'); as message) {
-              <p class="field-error" [id]="'location-venue-' + i + '-error'">{{ message }}</p>
-            }
-
-            <label [for]="'location-address-' + i" i18n="@@events.locations.address.label"
-              >Dirección</label
-            >
-            <input [id]="'location-address-' + i" type="text" formControlName="address" />
-            @if (fieldError(i, 'address'); as message) {
-              <p class="field-error" [id]="'location-address-' + i + '-error'">{{ message }}</p>
-            }
-
-            <label [for]="'location-time-' + i" i18n="@@events.locations.time.label"
-              >Hora (opcional)</label
-            >
-            <input [id]="'location-time-' + i" type="time" formControlName="startTime" />
-            @if (fieldError(i, 'startTime'); as message) {
-              <p class="field-error" [id]="'location-time-' + i + '-error'">{{ message }}</p>
+            @for (field of fields; track field.control) {
+              <label [for]="field.idPrefix + '-' + i">{{ field.label }}</label>
+              <input
+                [id]="field.idPrefix + '-' + i"
+                [type]="field.type"
+                [formControlName]="field.control"
+              />
+              @if (fieldError(i, field); as message) {
+                <p class="field-error" [id]="field.idPrefix + '-' + i + '-error'">{{ message }}</p>
+              }
             }
 
             <div class="row-actions">
-              <button type="button" [disabled]="$first" (click)="move(i, -1)">
+              <button type="button" [disabled]="saving() || $first" (click)="move(i, -1)">
                 <ng-container i18n="@@events.locations.moveUp">Subir</ng-container>
               </button>
-              <button type="button" [disabled]="$last" (click)="move(i, 1)">
+              <button type="button" [disabled]="saving() || $last" (click)="move(i, 1)">
                 <ng-container i18n="@@events.locations.moveDown">Bajar</ng-container>
               </button>
-              <button type="button" (click)="remove(i)">
+              <button type="button" [disabled]="saving()" (click)="remove(i)">
                 <ng-container i18n="@@events.locations.remove">Quitar</ng-container>
               </button>
             </div>
           </fieldset>
         }
 
-        <button
-          type="button"
-          [disabled]="rows.length >= maxLocations"
-          (click)="rows.push(createRow())"
-        >
-          <ng-container i18n="@@events.locations.add">Añadir lugar</ng-container>
+        <button type="button" [disabled]="saving() || rows.length >= maxLocations" (click)="add()">
+          <ng-container i18n="@@events.locations.addRow">Añadir lugar</ng-container>
         </button>
 
         @if (errorMessage()) {
@@ -111,7 +120,7 @@ const VISIBLE_API_ERROR = /^locations\.\d+\.(label|venue_name|address|start_time
             <ng-container i18n="@@events.locations.submit">Guardar</ng-container>
           }
         </button>
-        <button type="button" (click)="cancelled.emit()">
+        <button type="button" [disabled]="saving()" (click)="cancelled.emit()">
           <ng-container i18n="@@events.locations.cancel">Cancelar</ng-container>
         </button>
       </form>
@@ -145,12 +154,16 @@ export class EventLocationsFormComponent implements OnInit {
   readonly errorMessage = signal('');
   readonly apiErrors = signal<Record<string, string>>({});
   readonly maxLocations = MAX_LOCATIONS;
+  readonly fields = LOCATION_FIELDS;
 
   readonly rows = this.formBuilder.array([this.createRow()]);
   readonly form = this.formBuilder.group({ locations: this.rows });
 
   constructor() {
-    this.rows.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.apiErrors.set({}));
+    this.rows.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.apiErrors.set({});
+      this.errorMessage.set('');
+    });
   }
 
   ngOnInit(): void {
@@ -179,6 +192,10 @@ export class EventLocationsFormComponent implements OnInit {
     });
   }
 
+  add(): void {
+    this.rows.push(this.createRow());
+  }
+
   move(index: number, offset: -1 | 1): void {
     const row = this.rows.at(index);
     this.rows.removeAt(index);
@@ -189,16 +206,16 @@ export class EventLocationsFormComponent implements OnInit {
     this.rows.removeAt(index);
   }
 
-  fieldError(index: number, field: FieldName): string {
+  fieldError(index: number, field: LocationField): string {
     return (
       this.clientError(index, field) ||
-      this.apiErrors()[`locations.${index}.${API_FIELDS[field]}`] ||
+      this.apiErrors()[`locations.${index}.${field.apiField}`] ||
       ''
     );
   }
 
-  private clientError(index: number, field: FieldName): string {
-    const control = this.rows.at(index).controls[field];
+  private clientError(index: number, field: LocationField): string {
+    const control = this.rows.at(index).controls[field.control];
     if (!control.touched || control.valid) return '';
     return control.hasError('maxlength')
       ? $localize`:@@events.locations.tooLong:Este texto es demasiado largo.`
@@ -227,7 +244,7 @@ export class EventLocationsFormComponent implements OnInit {
     } catch (error) {
       const fieldErrors = apiFieldErrors(error);
       this.apiErrors.set(fieldErrors);
-      if (!Object.keys(fieldErrors).some((key) => VISIBLE_API_ERROR.test(key))) {
+      if (!Object.keys(fieldErrors).some(isRowFieldKey)) {
         this.errorMessage.set(apiErrorMessage(error));
       }
     } finally {

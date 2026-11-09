@@ -21,16 +21,16 @@ import { eventTimeSuffix } from './event-time';
           >{{ timeSuffix() }}
         }
       </p>
-      @if (event().locations.length > 0) {
+      @if (hasLocations()) {
         <app-event-location-list [locations]="event().locations" />
       } @else {
         <p i18n="@@events.locations.empty">Todavía no habéis añadido lugares</p>
       }
       <button type="button" (click)="editLocations.emit()">
-        @if (event().locations.length > 0) {
+        @if (hasLocations()) {
           <ng-container i18n="@@events.locations.edit">Editar lugares</ng-container>
         } @else {
-          <ng-container i18n="@@events.locations.add">Añadir lugares</ng-container>
+          <ng-container i18n="@@events.locations.addPlaces">Añadir lugares</ng-container>
         }
       </button>
       <app-event-publication [event]="event()" (changed)="changed.emit($event)" />
@@ -58,5 +58,6 @@ export class EventSummaryComponent {
   readonly edit = output<void>();
   readonly editLocations = output<void>();
   readonly remove = output<void>();
+  readonly hasLocations = computed(() => this.event().locations.length > 0);
   readonly timeSuffix = computed(() => eventTimeSuffix(this.event().start_time));
 }

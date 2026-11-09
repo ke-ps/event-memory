@@ -225,17 +225,50 @@ describe('EventLocationsFormComponent', () => {
   it('sends only once while saving', async () => {
     let resolve!: (event: EventRead) => void;
     const updateLocations = vi.fn(() => new Promise<EventRead>((r) => (resolve = r)));
-    const { fixture, element } = setup(twoLocations, updateLocations);
+    const { fixture, element, component } = setup(twoLocations, updateLocations);
 
     button(element, 'Guardar').click();
     fixture.detectChanges();
     button(element, 'Guardando').click();
+    void component.submit();
     fixture.detectChanges();
 
     expect(button(element, 'Guardando').disabled).toBe(true);
     expect(updateLocations).toHaveBeenCalledTimes(1);
     resolve(eventWith(twoLocations));
     await fixture.whenStable();
+  });
+
+  it('disables cancel and the row buttons while saving', async () => {
+    let resolve!: (event: EventRead) => void;
+    const updateLocations = vi.fn(() => new Promise<EventRead>((r) => (resolve = r)));
+    const { fixture, element } = setup(twoLocations, updateLocations);
+
+    button(element, 'Guardar').click();
+    fixture.detectChanges();
+
+    expect(button(element, 'Cancelar').disabled).toBe(true);
+    expect(button(element, 'Añadir lugar').disabled).toBe(true);
+    expect(button(row(element, 0), 'Bajar').disabled).toBe(true);
+    expect(button(row(element, 1), 'Subir').disabled).toBe(true);
+    expect(button(row(element, 0), 'Quitar').disabled).toBe(true);
+    resolve(eventWith(twoLocations));
+    await fixture.whenStable();
+  });
+
+  it('clears the general error when the list changes', async () => {
+    const { fixture, element, component } = setup(
+      twoLocations,
+      rejectWith([{ field: 'locations', code: 'too_long' }]),
+    );
+    await component.submit();
+    fixture.detectChanges();
+    expect(element.querySelector('[role="alert"]')).not.toBeNull();
+
+    button(row(element, 0), 'Bajar').click();
+    fixture.detectChanges();
+
+    expect(element.querySelector('[role="alert"]')).toBeNull();
   });
 
   it('cancel emits cancelled without calling the API', () => {

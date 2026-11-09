@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 import { eventMapUrl } from './event-map';
 import { eventTimeSuffix } from './event-time';
-import { EventLocation } from './event.models';
+import { PublicEventLocation } from './event.models';
 
 @Component({
   selector: 'app-event-location-list',
@@ -39,7 +39,7 @@ import { EventLocation } from './event.models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventLocationListComponent {
-  readonly locations = input.required<Omit<EventLocation, 'id'>[]>();
+  readonly locations = input.required<PublicEventLocation[]>();
   readonly timeSuffix = eventTimeSuffix;
   readonly mapUrl = eventMapUrl;
 }

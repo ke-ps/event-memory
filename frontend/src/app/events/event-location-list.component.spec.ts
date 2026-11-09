@@ -2,18 +2,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EventLocationListComponent } from './event-location-list.component';
 import { eventMapUrl } from './event-map';
-import { EventLocation } from './event.models';
+import { PublicEventLocation } from './event.models';
 
-type Place = Omit<EventLocation, 'id'>;
-
-const ceremony: Place = {
+const ceremony: PublicEventLocation = {
   label: 'Ceremonia',
   venue_name: 'Iglesia',
   address: 'Calle Mayor 1',
   position: 0,
   start_time: '17:00:00',
 };
-const party: Place = {
+const party: PublicEventLocation = {
   label: 'Celebración',
   venue_name: 'Finca',
   address: 'Camino 2',
@@ -21,7 +19,7 @@ const party: Place = {
   start_time: null,
 };
 
-function render(locations: Place[]): HTMLElement {
+function render(locations: PublicEventLocation[]): HTMLElement {
   const fixture: ComponentFixture<EventLocationListComponent> = TestBed.createComponent(
     EventLocationListComponent,
   );
