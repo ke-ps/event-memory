@@ -141,3 +141,29 @@ def test_public_event_exposes_location_time(client: TestClient, as_user: AsUser)
 
     assert set(location) == {"label", "venue_name", "address", "position", "start_time"}
     assert location["start_time"] == "17:00:00"
+
+
+def test_public_event_exposes_the_texts(client: TestClient, as_user: AsUser) -> None:
+    as_user("uid-1", None)
+    create_event(client)
+    client.put(
+        f"{EVENTS_URL}/me",
+        json={
+            "title": None,
+            "slug": SLUG,
+            "details": {
+                "partner_one_name": "Ana",
+                "partner_two_name": "Luis",
+                "welcome_text": "Bienvenidos",
+                "story": "Nos conocimos en Toledo",
+            },
+            "event_date": "2027-06-12",
+            "start_time": None,
+        },
+    )
+    client.post(f"{EVENTS_URL}/me/publish")
+
+    details = client.get(f"{PUBLIC_URL}/{SLUG}").json()["details"]
+
+    assert details["welcome_text"] == "Bienvenidos"
+    assert details["story"] == "Nos conocimos en Toledo"

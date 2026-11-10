@@ -482,126 +482,147 @@
         <source>Editar la boda</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">51,52</context>
+          <context context-type="linenumber">53,54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.title.label" datatype="html">
         <source>Título</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">53,54</context>
+          <context context-type="linenumber">55,56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.title.hint" datatype="html">
         <source> Si lo dejas vacío, se usarán vuestros nombres </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">56,58</context>
+          <context context-type="linenumber">58,60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.slug.label" datatype="html">
         <source>Dirección web</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">62,63</context>
+          <context context-type="linenumber">64,65</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.slug.lockedHint" datatype="html">
         <source> Para cambiarla, despublica la boda </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">69,71</context>
+          <context context-type="linenumber">71,73</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.slug.hint" datatype="html">
         <source>Así será el enlace de vuestra boda</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">72,74</context>
+          <context context-type="linenumber">74,76</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.partnerOne.label" datatype="html">
         <source>Nombre de la primera persona</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">79,81</context>
+          <context context-type="linenumber">81,83</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.partnerTwo.label" datatype="html">
         <source>Nombre de la segunda persona</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">87,89</context>
+          <context context-type="linenumber">89,91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.date.label" datatype="html">
         <source>Fecha de la boda (opcional)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">95,97</context>
+          <context context-type="linenumber">97,99</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.time.label" datatype="html">
         <source>Hora de inicio (opcional)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">103,105</context>
+          <context context-type="linenumber">105,107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.welcomeText.label" datatype="html">
+        <source>Texto de bienvenida (opcional)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">113,115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.story.label" datatype="html">
+        <source>Vuestra historia (opcional)</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">120,121</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.saving" datatype="html">
         <source>Guardando…</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">116,117</context>
+          <context context-type="linenumber">132,133</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.submit" datatype="html">
         <source>Guardar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">118,120</context>
+          <context context-type="linenumber">134,136</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.cancel" datatype="html">
         <source>Cancelar</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">122,123</context>
+          <context context-type="linenumber">138,139</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.slug.required" datatype="html">
         <source>Escribe la dirección de tu boda.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">183</context>
+          <context context-type="linenumber">203</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.slug.invalid" datatype="html">
         <source>Usa solo minúsculas, números y guiones (entre 3 y 80 caracteres).</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">184</context>
+          <context context-type="linenumber">204</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="events.edit.text.tooLong" datatype="html">
+        <source>El texto es demasiado largo.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
+          <context context-type="linenumber">207</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.title.tooLong" datatype="html">
         <source>El título es demasiado largo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">188</context>
+          <context context-type="linenumber">211</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.name.tooLong" datatype="html">
         <source>El nombre es demasiado largo.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">189</context>
+          <context context-type="linenumber">212</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.edit.name.required" datatype="html">
         <source>Escribe un nombre.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/events/event-edit-form.component.ts</context>
-          <context context-type="linenumber">191</context>
+          <context context-type="linenumber">214</context>
         </context-group>
       </trans-unit>
       <trans-unit id="events.locations.map" datatype="html">
@@ -846,14 +867,14 @@
         <source>Esta página no está disponible.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/public-event-page.component.ts</context>
-          <context context-type="linenumber">39,41</context>
+          <context context-type="linenumber">45,47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="public.retry" datatype="html">
         <source> Reintentar </source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/public-event-page.component.ts</context>
-          <context context-type="linenumber">44,45</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
       </trans-unit>
     </body>

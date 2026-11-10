@@ -582,3 +582,59 @@ def test_location_rejects_blank_fields(field: str) -> None:
 def test_location_rejects_too_long_fields(field: str, length: int) -> None:
     with pytest.raises(ValidationError):
         LocationWrite(**{**LOCATION_TEXT, field: "x" * length}, start_time=None)
+
+
+def names(**texts: object) -> dict[str, object]:
+    return {"partner_one_name": "Ana", "partner_two_name": "Luis", **texts}
+
+
+def test_update_event_saves_the_texts(db_session: Session) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event(
+        db_session, "uid-a", edit(details=names(welcome_text="  Hola  ", story="Línea 1\nLínea 2"))
+    )
+
+    assert event.details["welcome_text"] == "Hola"
+    assert event.details["story"] == "Línea 1\nLínea 2"
+
+
+@pytest.mark.parametrize("empty", [None, "", "   "])
+def test_update_event_does_not_store_empty_texts(db_session: Session, empty: str | None) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event(
+        db_session, "uid-a", edit(details=names(welcome_text=empty, story=empty))
+    )
+
+    assert event.details == names()
+
+
+def test_create_event_details_have_no_empty_texts(db_session: Session) -> None:
+    event = create_event(db_session, "uid-a", wedding())
+
+    assert event.details == names()
+
+
+@pytest.mark.parametrize(("field", "limit"), [("welcome_text", 500), ("story", 2000)])
+def test_update_event_accepts_texts_up_to_the_limit(
+    db_session: Session, field: str, limit: int
+) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    event = update_own_event(db_session, "uid-a", edit(details=names(**{field: "x" * limit})))
+
+    assert len(event.details[field]) == limit
+
+
+@pytest.mark.parametrize(("field", "limit"), [("welcome_text", 500), ("story", 2000)])
+def test_update_event_rejects_texts_over_the_limit(
+    db_session: Session, field: str, limit: int
+) -> None:
+    create_event(db_session, "uid-a", wedding())
+
+    with pytest.raises(AppError) as exc_info:
+        update_own_event(db_session, "uid-a", edit(details=names(**{field: "x" * (limit + 1)})))
+
+    assert exc_info.value.status_code == 422
+    assert {"field": f"details.{field}", "code": "string_too_long"} in (exc_info.value.errors or [])

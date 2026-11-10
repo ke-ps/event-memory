@@ -27,6 +27,8 @@ const API_FIELDS = {
   eventDate: 'event_date',
   startTime: 'start_time',
   slug: 'slug',
+  welcomeText: 'details.welcome_text',
+  story: 'details.story',
 } as const;
 
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -107,6 +109,20 @@ type FieldName = keyof typeof API_FIELDS;
           <p class="field-error" id="edit-start-time-error">{{ message }}</p>
         }
 
+        <label for="edit-welcome-text" i18n="@@events.edit.welcomeText.label"
+          >Texto de bienvenida (opcional)</label
+        >
+        <textarea id="edit-welcome-text" rows="3" formControlName="welcomeText"></textarea>
+        @if (fieldError('welcomeText'); as message) {
+          <p class="field-error" id="edit-welcome-text-error">{{ message }}</p>
+        }
+
+        <label for="edit-story" i18n="@@events.edit.story.label">Vuestra historia (opcional)</label>
+        <textarea id="edit-story" rows="6" formControlName="story"></textarea>
+        @if (fieldError('story'); as message) {
+          <p class="field-error" id="edit-story-error">{{ message }}</p>
+        }
+
         @if (errorMessage()) {
           <p class="field-error" role="alert">{{ errorMessage() }}</p>
         }
@@ -152,6 +168,8 @@ export class EventEditFormComponent implements OnInit {
     eventDate: [''],
     startTime: [''],
     slug: ['', [slugValidator]],
+    welcomeText: ['', [Validators.maxLength(500)]],
+    story: ['', [Validators.maxLength(2000)]],
   });
 
   constructor() {
@@ -167,6 +185,8 @@ export class EventEditFormComponent implements OnInit {
       eventDate: event.event_date ?? '',
       startTime: event.start_time?.slice(0, 5) ?? '',
       slug: event.slug,
+      welcomeText: event.details.welcome_text ?? '',
+      story: event.details.story ?? '',
     });
     if (event.status === 'published') this.form.controls.slug.disable();
   }
@@ -182,6 +202,9 @@ export class EventEditFormComponent implements OnInit {
       return control.hasError('required')
         ? $localize`:@@events.edit.slug.required:Escribe la dirección de tu boda.`
         : $localize`:@@events.edit.slug.invalid:Usa solo minúsculas, números y guiones (entre 3 y 80 caracteres).`;
+    }
+    if (controlName === 'welcomeText' || controlName === 'story') {
+      return $localize`:@@events.edit.text.tooLong:El texto es demasiado largo.`;
     }
     if (control.hasError('maxlength')) {
       return controlName === 'title'
@@ -201,8 +224,16 @@ export class EventEditFormComponent implements OnInit {
     this.saving.set(true);
     this.errorMessage.set('');
     this.apiErrors.set({});
-    const { title, partnerOneName, partnerTwoName, eventDate, startTime, slug } =
-      this.form.getRawValue();
+    const {
+      title,
+      partnerOneName,
+      partnerTwoName,
+      eventDate,
+      startTime,
+      slug,
+      welcomeText,
+      story,
+    } = this.form.getRawValue();
 
     try {
       const event = await this.eventApi.update({
@@ -211,6 +242,8 @@ export class EventEditFormComponent implements OnInit {
         details: {
           partner_one_name: partnerOneName.trim(),
           partner_two_name: partnerTwoName.trim(),
+          welcome_text: welcomeText.trim() || null,
+          story: story.trim() || null,
         },
         event_date: eventDate || null,
         start_time: startTime || null,

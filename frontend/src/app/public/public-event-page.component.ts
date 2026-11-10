@@ -30,8 +30,14 @@ import { PublicEventApiService } from './public-event-api.service';
                 >{{ suffix(current) }}
               }
             </p>
+            @if (current.details.welcome_text; as welcome) {
+              <p class="free-text">{{ welcome }}</p>
+            }
             @if (current.locations.length > 0) {
               <app-event-location-list [locations]="current.locations" />
+            }
+            @if (current.details.story; as story) {
+              <p class="free-text">{{ story }}</p>
             }
           }
         }
@@ -66,6 +72,9 @@ import { PublicEventApiService } from './public-event-api.service';
     }
     .error {
       color: #a12d2d;
+    }
+    .free-text {
+      white-space: pre-line;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
